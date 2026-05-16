@@ -48,8 +48,8 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         true -> {
-                            // Ya registrado: mostrar pantalla principal
-                            PantallaPrincipal(lecheViewModel)
+                            // Ya registrado: mostrar navegación por pestañas
+                            NavegacionPrincipal(lecheViewModel)
                         }
                     }
                 }
@@ -103,28 +103,3 @@ fun PantallaRegistro(onRegistroExitoso: (String, String) -> Unit) {
     }
 }
 
-@Composable
-fun PantallaPrincipal(viewModel: LecheViewModel) {
-    val context = androidx.compose.ui.platform.LocalContext.current
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("¡Bienvenido a LechApp!", style = MaterialTheme.typography.headlineLarge)
-        Text("Aquí va el menú principal.")
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // ¡Adiós al botón viejo, hola al micrófono real!
-        BotonMicrofono(
-            onTextoEscuchado = { textoReconocido ->
-                // Lo que sea que escuche el teléfono, se lo manda a tu lógica de Room y Gemini
-                viewModel.procesarEntradaVoz(context, textoReconocido)
-            },
-            // Le damos un poco de tamaño para que se vea bien en pantalla
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}

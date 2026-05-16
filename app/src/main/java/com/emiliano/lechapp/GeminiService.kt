@@ -12,13 +12,22 @@ class GeminiService {
     )
 
     suspend fun procesarVozConIA(textoVoz: String): String? {
+        val fechaActual = java.time.LocalDate.now()
         val prompt = """
-            Eres un asistente contable para ganaderos. Tu tarea es extraer datos de producción.
-            Del siguiente texto, extrae la cantidad de LITROS de leche y el PRECIO por litro.
-            Responde ÚNICAMENTE en formato JSON plano, sin Markdown, así:
-            {"litros": 0.0, "precio": 0.0}
-            Si no hay precio, usa 2000.0 como valor predeterminado.
+            Eres un asistente inteligente para ganaderos. Procesa el texto y devuelve un ARRAY de JSON.
+            FECHA ACTUAL: $fechaActual.
+            
+            REGLAS:
+            1. MULTIACCIÓN: Si el usuario pide varias cosas (ej. registrar y consultar), devuelve un objeto por cada acción en el array.
+            2. TIEMPO RELATIVO: Si dice "ayer", calcula la fecha real basándote en $fechaActual. Devuelve las fechas en formato "YYYY-MM-DD".
+            3. NORMALIZACIÓN: Unifica nombres de compradores (ej. "Marco", "Marquitos", "Marcos" -> siempre "Marcos").
+            
+            FORMATOS DE OBJETO:
+            - Registro: {"intencion": "registro", "litros": 10.5, "precio": 2000, "comprador": "Marcos", "fecha": "YYYY-MM-DD"}
+            - Consulta: {"intencion": "consulta", "fechaInicio": "YYYY-MM-DD", "fechaFin": "YYYY-MM-DD"}
+
             Texto: "$textoVoz"
+            Responde ÚNICAMENTE con el ARRAY JSON plano: [{}, ...]
         """.trimIndent()
 
         return try {

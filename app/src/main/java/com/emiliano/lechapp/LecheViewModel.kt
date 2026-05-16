@@ -6,101 +6,147 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
+import org.json.JSONArray
+import java.text.SimpleDateFormat
+import java.util.*
+
+enum class FiltroTiempo { DIA, SEMANA, MES, TODO }
 
 class LecheViewModel(
     private val dao: UsuarioDao,
     private val geminiService: GeminiService,
 ) : ViewModel() {
 
-    fun procesarEntradaVoz(context: Context, textoVoz: String) {
-        Toast.makeText(context, "Procesando voz...", Toast.LENGTH_SHORT).show()
+    private val _precioPorDefecto = MutableStateFlow(2000.0)
+    val precioPorDefecto: StateFlow<Double> = _precioPorDefecto.asStateFlow()
 
+    private val _filtroActual = MutableStateFlow(FiltroTiempo.TODO)
+    val filtroActual: StateFlow<FiltroTiempo> = _filtroActual.asStateFlow()
+
+    private val _mensajeConsulta = MutableStateFlow<String?>(null)
+    val mensajeConsulta: StateFlow<String?> = _mensajeConsulta.asStateFlow()
+
+    fun limpiarConsulta() { _mensajeConsulta.value = null }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val registrosFiltrados: StateFlow<List<RegistroLeche>> = _filtroActual.flatMapLatest { filtro ->
+        if (filtro == FiltroTiempo.TODO) dao.obtenerTodosLosRegistros()
+        else dao.obtenerRegistrosFiltrados(calcularMilisegundosDesde(filtro))
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val totalLitros: StateFlow<Double> = _filtroActual.flatMapLatest { filtro ->
+        if (filtro == FiltroTiempo.TODO) dao.obtenerTotalLitros()
+        else dao.obtenerTotalLitrosFiltrado(calcularMilisegundosDesde(filtro))
+    }.map { it ?: 0.0 }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val gananciaTotal: StateFlow<Double> = _filtroActual.flatMapLatest { filtro ->
+        if (filtro == FiltroTiempo.TODO) dao.obtenerGananciaTotal()
+        else dao.obtenerGananciaTotalFiltrada(calcularMilisegundosDesde(filtro))
+    }.map { it ?: 0.0 }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    val perfilUsuario = flow { emit(dao.obtenerPerfil()) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun actualizarPrecioPorDefecto(nuevoPrecio: Double) { _precioPorDefecto.value = nuevoPrecio }
+    fun cambiarFiltro(nuevoFiltro: FiltroTiempo) { _filtroActual.value = nuevoFiltro }
+    fun borrarRegistro(registro: RegistroLeche) { viewModelScope.launch(Dispatchers.IO) { dao.borrarRegistro(registro) } }
+    fun borrarTodoElHistorial() { viewModelScope.launch(Dispatchers.IO) { dao.borrarTodoElHistorial() } }
+
+    fun procesarEntradaVoz(context: Context, textoVoz: String) {
         viewModelScope.launch {
             if (NetworkUtils.estaOnline(context)) {
                 val respuestaIA = geminiService.procesarVozConIA(textoVoz)
-
-                if (respuestaIA != null) {
-                    try {
-                        val jsonLimpio = respuestaIA.replace("```json", "").replace("```", "").trim()
-                        val json = JSONObject(jsonLimpio)
-                        val litros = json.getDouble("litros")
-                        val precio = json.optDouble("precio", 2000.0)
-
-                        if (litros > 0.0) {
-                            val nuevoRegistro = RegistroLeche(litros = litros, precioPorLitro = precio, notaVoz = textoVoz)
-                            withContext(Dispatchers.IO) {
-                                dao.insertarRegistroLeche(nuevoRegistro)
-                            }
-
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "¡IA Guardó! $litros L", Toast.LENGTH_LONG).show()
-                            }
-                        } else {
-                            Log.w("LechApp_IA", "La IA devolvió 0 litros o un valor inválido. Texto: $textoVoz")
-                            procesarOffline(context, textoVoz) // Si entendió 0, pasamos al plan B
-                        }
-                    } catch (e: Exception) {
-                        Log.e("LechApp_IA", "Error procesando JSON de IA: ", e)
-                        procesarOffline(context, textoVoz)
-                    }
+                if (respuestaIA != null && respuestaIA.contains("[")) {
+                    procesarJsonIA(context, respuestaIA, textoVoz)
                 } else {
-                    Log.w("LechApp_IA", "Gemini devolvió NULL (posible fallo de red o API Key)")
-                    procesarOffline(context, textoVoz)
+                    ejecutarProcesamientoLocal(context, textoVoz)
                 }
             } else {
-                Log.i("LechApp_IA", "Sin conexión: usando modo offline directo")
-                procesarOffline(context, textoVoz)
+                ejecutarProcesamientoLocal(context, textoVoz)
             }
         }
     }
 
-    private suspend fun procesarOffline(context: Context, texto: String) {
-        val textoLimpio = texto.lowercase()
-        Log.d("LechApp_Offline", "Procesando texto: $textoLimpio")
+    private suspend fun procesarJsonIA(context: Context, jsonStr: String, original: String) {
+        try {
+            val array = JSONArray(jsonStr.replace("```json", "").replace("```", "").trim())
+            for (i in 0 until array.length()) {
+                val json = array.getJSONObject(i)
+                if (json.optString("intencion") == "consulta") {
+                    realizarConsulta(json.getString("fechaInicio"), json.getString("fechaFin"))
+                } else {
+                    val r = RegistroLeche(
+                        litros = json.optDouble("litros", 0.0),
+                        precioPorLitro = json.optDouble("precio", _precioPorDefecto.value),
+                        comprador = normalizarConFuzzy(json.optString("comprador", "General")),
+                        notaVoz = original,
+                        fecha = parsearFechaIA(json.optString("fecha"))
+                    )
+                    if (r.litros > 0) dao.insertarRegistroLeche(r)
+                }
+            }
+        } catch (e: Exception) {
+            ejecutarProcesamientoLocal(context, original)
+        }
+    }
+
+    private suspend fun ejecutarProcesamientoLocal(context: Context, texto: String) {
+        val procesador = ProcesadorVozLocal(_precioPorDefecto.value)
+        val registros = procesador.procesarFrase(texto)
         
-        // 1. Regex para detectar números base (ej. "2 litros", "3.5 L")
-        // Hemos simplificado la regex para capturar el número antes de "litro/s" o "l"
-        val regexLitros = "(\\d+(?:[.,]\\d+)?)\\s*(litros|litro|l\\b)".toRegex()
-        val match = regexLitros.find(textoLimpio)
-        var litros = match?.groupValues?.get(1)?.replace(",", ".")?.toDoubleOrNull() ?: 0.0
-        Log.d("LechApp_Offline", "Litros base detectados: $litros")
-
-        // 2. Lógica aditiva para fracciones (medio, cuarto, medio cuarto)
-        var extraFraccion = 0.0
-        var textoParaFracciones = textoLimpio
-
-        // Prioridad a "medio cuarto" (0.125)
-        if (textoParaFracciones.contains("medio cuarto")) {
-            extraFraccion += 0.125
-            textoParaFracciones = textoParaFracciones.replace("medio cuarto", "")
-            Log.d("LechApp_Offline", "Detectado medio cuarto (+0.125)")
+        if (registros.isEmpty()) {
+            withContext(Dispatchers.Main) { Toast.makeText(context, "No reconocido: '$texto'", Toast.LENGTH_SHORT).show() }
+            return
         }
 
-        if (textoParaFracciones.contains("medio")) {
-            extraFraccion += 0.5
-            Log.d("LechApp_Offline", "Detectado medio (+0.5)")
-        }
-
-        if (textoParaFracciones.contains("cuarto")) {
-            extraFraccion += 0.25
-            Log.d("LechApp_Offline", "Detectado cuarto (+0.25)")
-        }
-
-        litros += extraFraccion
-        Log.d("LechApp_Offline", "Total litros final: $litros")
-
-        withContext(Dispatchers.Main) {
-            if (litros > 0.0) {
-                val nuevoRegistro = RegistroLeche(litros = litros, precioPorLitro = 2000.0, notaVoz = texto)
-                withContext(Dispatchers.IO) { dao.insertarRegistroLeche(nuevoRegistro) }
-
-                Toast.makeText(context, "Offline Guardó: $litros L", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(context, "No detecté los litros en: '$texto'", Toast.LENGTH_LONG).show()
+        withContext(Dispatchers.IO) {
+            registros.forEach { r ->
+                val registroNormalizado = r.copy(comprador = normalizarConFuzzy(r.comprador))
+                dao.insertarRegistroLeche(registroNormalizado)
             }
         }
+        withContext(Dispatchers.Main) { Toast.makeText(context, "Local: ${registros.size} registros guardados", Toast.LENGTH_SHORT).show() }
+    }
+
+    private suspend fun normalizarConFuzzy(nombre: String): String {
+        // En un caso real, obtendríamos solo los nombres únicos de la BD
+        val existentes = registrosFiltrados.value.map { it.comprador }.distinct()
+        return TextoUtils.encontrarMasCercano(nombre, existentes)
+    }
+
+    private fun parsearFechaIA(fechaStr: String?): Long {
+        if (fechaStr.isNullOrEmpty()) return System.currentTimeMillis()
+        return try {
+            SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(fechaStr)?.time ?: System.currentTimeMillis()
+        } catch (e: Exception) { System.currentTimeMillis() }
+    }
+
+    private suspend fun realizarConsulta(inicioStr: String, finStr: String) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val inicio = sdf.parse(inicioStr)?.time ?: return
+        val fin = sdf.parse(finStr)?.time?.plus(86399999) ?: return 
+
+        val ganancia = dao.obtenerGananciaEntreFechas(inicio, fin) ?: 0.0
+        val litros = dao.obtenerLitrosEntreFechas(inicio, fin) ?: 0.0
+        
+        val resultado = "Entre $inicioStr y $finStr:\nTotal: ${ganancia.formatearDinero()}\nLitros: ${String.format(Locale.getDefault(), "%.1f", litros)}L"
+        _mensajeConsulta.value = if (_mensajeConsulta.value == null) resultado else "${_mensajeConsulta.value}\n\n$resultado"
+    }
+
+    private fun calcularMilisegundosDesde(filtro: FiltroTiempo): Long {
+        val c = Calendar.getInstance()
+        when (filtro) {
+            FiltroTiempo.DIA -> c.add(Calendar.DAY_OF_YEAR, -1)
+            FiltroTiempo.SEMANA -> c.add(Calendar.WEEK_OF_YEAR, -1)
+            FiltroTiempo.MES -> c.add(Calendar.MONTH, -1)
+            FiltroTiempo.TODO -> return 0L
+        }
+        return c.timeInMillis
     }
 }

@@ -8,6 +8,7 @@ data class RegistroLeche(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val litros: Double,
     val precioPorLitro: Double,
-    val fecha: Long = System.currentTimeMillis(), // Guarda el momento exacto
-    val notaVoz: String? = null // Aquí guardaremos lo que Gemini procese después
+    val fecha: Long = System.currentTimeMillis(),
+    val notaVoz: String? = null,
+    val comprador: String = "General"
 )

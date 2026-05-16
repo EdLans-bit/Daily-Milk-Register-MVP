@@ -1,8 +1,7 @@
 package com.emiliano.lechapp
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+
+import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDao {
@@ -13,19 +12,37 @@ interface UsuarioDao {
     @Query("SELECT * FROM perfil_usuario WHERE id = 0")
     suspend fun obtenerPerfil(): PerfilUsuario?
 
-    // --- Lógica de Leche (NUEVO) ---
+    // --- Lógica de Leche ---
     @Insert
     suspend fun insertarRegistroLeche(registro: RegistroLeche)
 
     @Query("SELECT * FROM registros_leche ORDER BY fecha DESC")
-    suspend fun obtenerTodosLosRegistros(): List<RegistroLeche>
+    fun obtenerTodosLosRegistros(): Flow<List<RegistroLeche>>
+
+    @Query("SELECT * FROM registros_leche WHERE fecha >= :desde ORDER BY fecha DESC")
+    fun obtenerRegistrosFiltrados(desde: Long): Flow<List<RegistroLeche>>
+
+    @Query("SELECT SUM(litros) FROM registros_leche WHERE fecha >= :desde")
+    fun obtenerTotalLitrosFiltrado(desde: Long): Flow<Double?>
+
+    @Query("SELECT SUM(litros * precioPorLitro) FROM registros_leche WHERE fecha >= :desde")
+    fun obtenerGananciaTotalFiltrada(desde: Long): Flow<Double?>
 
     @Query("SELECT SUM(litros) FROM registros_leche")
-    suspend fun obtenerTotalLitros(): Double?
+    fun obtenerTotalLitros(): Flow<Double?>
 
     @Query("SELECT SUM(litros * precioPorLitro) FROM registros_leche")
-    suspend fun obtenerGananciaTotal(): Double?
+    fun obtenerGananciaTotal(): Flow<Double?>
 
-    @Query("SELECT * FROM registros_leche ORDER BY fecha DESC LIMIT 10")
-    suspend fun obtenerUltimos10Registros(): List<RegistroLeche>
+    @Query("SELECT SUM(litros * precioPorLitro) FROM registros_leche WHERE fecha BETWEEN :inicio AND :fin")
+    suspend fun obtenerGananciaEntreFechas(inicio: Long, fin: Long): Double?
+
+    @Query("SELECT SUM(litros) FROM registros_leche WHERE fecha BETWEEN :inicio AND :fin")
+    suspend fun obtenerLitrosEntreFechas(inicio: Long, fin: Long): Double?
+
+    @Delete
+    suspend fun borrarRegistro(registro: RegistroLeche)
+
+    @Query("DELETE FROM registros_leche")
+    suspend fun borrarTodoElHistorial()
 }
