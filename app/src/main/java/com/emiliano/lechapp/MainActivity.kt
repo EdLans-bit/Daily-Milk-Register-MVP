@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.emiliano.lechapp.ui.theme.LechAppTheme
-
+import com.emiliano.lechapp.ui.BotonMicrofono
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,14 +113,18 @@ fun PantallaPrincipal(viewModel: LecheViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("¡Bienvenido a LechApp!", style = MaterialTheme.typography.headlineLarge)
-        Text("Aquí va el menú principal.") // Mensaje corregido para que tus amigos no se asusten
+        Text("Aquí va el menú principal.")
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = {
-            viewModel.procesarEntradaVoz(context, "Hoy saqué 50 litros")
-        }) {
-            Text("Probar Lógica: 'Hoy saqué 50 litros'")
-        }
+        // ¡Adiós al botón viejo, hola al micrófono real!
+        BotonMicrofono(
+            onTextoEscuchado = { textoReconocido ->
+                // Lo que sea que escuche el teléfono, se lo manda a tu lógica de Room y Gemini
+                viewModel.procesarEntradaVoz(context, textoReconocido)
+            },
+            // Le damos un poco de tamaño para que se vea bien en pantalla
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

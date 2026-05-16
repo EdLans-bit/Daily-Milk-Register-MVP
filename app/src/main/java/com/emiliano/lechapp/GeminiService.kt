@@ -1,12 +1,13 @@
 package com.emiliano.lechapp
 
+import android.util.Log // <-- Importante
 import com.google.ai.client.generativeai.GenerativeModel
 
 class GeminiService {
     private val apiKey = BuildConfig.GEMINI_API_KEY
 
     private val model = GenerativeModel(
-        modelName = "gemini-1.5-flash",
+        modelName = "gemini-flash-latest",
         apiKey = apiKey
     )
 
@@ -22,8 +23,12 @@ class GeminiService {
 
         return try {
             val response = model.generateContent(prompt)
+            // Imprimimos en el Logcat lo que respondió Gemini antes de devolverlo
+            Log.d("LechApp_IA", "Respuesta cruda de Gemini: ${response.text}")
             response.text
         } catch (e: Exception) {
+            // AQUÍ DESTAPAMOS EL ERROR:
+            Log.e("LechApp_IA", "¡Falló Gemini! Motivo: ${e.message}", e)
             null
         }
     }
