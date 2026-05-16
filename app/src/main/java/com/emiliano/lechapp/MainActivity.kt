@@ -4,47 +4,69 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import com.emiliano.lechapp.ui.theme.LechAppTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.emiliano.lechapp.ui.theme.LechAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val database = AppDatabase.getDatabase(this)
+        val usuarioDao = database.usuarioDao()
+        val registroViewModel = RegistroViewModel(usuarioDao)   // ← solo aquí, una vez
+        val geminiService = GeminiService()
+        val lecheViewModel = LecheViewModel(usuarioDao, geminiService)
+
         setContent {
             LechAppTheme {
+                var usuarioRegistrado by remember { mutableStateOf<Boolean?>(null) }
+
+                LaunchedEffect(Unit) {
+                    val perfil = usuarioDao.obtenerPerfil()
+                    usuarioRegistrado = (perfil != null)
+                }
 
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    PantallaRegistro()
+                    when (usuarioRegistrado) {
+                        null -> {
+                            // Cargando: muestra spinner mientras consulta la BD
+                            Box(contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                        false -> {
+                            // Primera vez: mostrar pantalla de registro
+                            PantallaRegistro { nombre, animales ->
+                                registroViewModel.guardarGanadero(nombre, animales)
+                                usuarioRegistrado = true
+                            }
+                        }
+                        true -> {
+                            // Ya registrado: mostrar pantalla principal
+                            PantallaPrincipal(lecheViewModel)
+                        }
+                    }
                 }
             }
         }
     }
 }
-
 @Composable
-fun PantallaRegistro() {
-    // Estas variables guardan lo que el usuario escribe
+fun PantallaRegistro(onRegistroExitoso: (String, String) -> Unit) {
     var nombre by remember { mutableStateOf("") }
     var animales by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Registro de Ganadero",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
+        Text("Registro de Ganadero", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
@@ -68,10 +90,37 @@ fun PantallaRegistro() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /* Aquí conectaremos el DAO de Room mañana */ },
-            modifier = Modifier.fillMaxWidth()
+            onClick = {
+                if (nombre.isNotBlank() && animales.isNotBlank()) {
+                    onRegistroExitoso(nombre, animales)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = nombre.isNotBlank() && animales.isNotBlank()
         ) {
             Text("Comenzar")
+        }
+    }
+}
+
+@Composable
+fun PantallaPrincipal(viewModel: LecheViewModel) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("¡Bienvenido a LechApp!", style = MaterialTheme.typography.headlineLarge)
+        Text("Aquí va el menú principal.") // Mensaje corregido para que tus amigos no se asusten
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(onClick = {
+            viewModel.procesarEntradaVoz(context, "Hoy saqué 50 litros")
+        }) {
+            Text("Probar Lógica: 'Hoy saqué 50 litros'")
         }
     }
 }

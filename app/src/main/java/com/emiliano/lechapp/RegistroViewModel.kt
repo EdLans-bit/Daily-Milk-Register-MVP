@@ -14,7 +14,7 @@ class RegistroViewModel(private val dao: UsuarioDao) : ViewModel() {
         // Creamos el paquete de datos
         val perfil = PerfilUsuario(
             nombreGanadero = nombre,
-            cantidadAnimales = cantidad
+            cantidadAnimales = cantidad,
         )
 
         // Lanzamos el guardado en segundo plano para no congelar la pantalla

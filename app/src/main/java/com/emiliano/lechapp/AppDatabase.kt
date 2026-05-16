@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [PerfilUsuario::class], version = 1)
+@Database(entities = [PerfilUsuario::class, RegistroLeche::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
 
@@ -17,7 +17,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "lechapp_db"
+                    "lechapp_db",
                 ).build()
                 INSTANCE = instance
                 instance

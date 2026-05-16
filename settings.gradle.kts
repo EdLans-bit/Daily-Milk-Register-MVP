@@ -10,6 +10,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+    // ← ya NO va el bloque plugins { } aquí
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
