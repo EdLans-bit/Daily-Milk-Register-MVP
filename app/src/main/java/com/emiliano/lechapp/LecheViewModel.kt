@@ -30,6 +30,14 @@ class LecheViewModel(
     private val _mensajeConsulta = MutableStateFlow<String?>(null)
     val mensajeConsulta: StateFlow<String?> = _mensajeConsulta.asStateFlow()
 
+    // Evento para activar el micrófono desde hardware (botones de volumen)
+    private val _triggerMicrofono = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val triggerMicrofono = _triggerMicrofono.asSharedFlow()
+
+    fun activarMicrofonoDesdeHardware() {
+        _triggerMicrofono.tryEmit(Unit)
+    }
+
     fun limpiarConsulta() { _mensajeConsulta.value = null }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,6 +65,46 @@ class LecheViewModel(
     fun cambiarFiltro(nuevoFiltro: FiltroTiempo) { _filtroActual.value = nuevoFiltro }
     fun borrarRegistro(registro: RegistroLeche) { viewModelScope.launch(Dispatchers.IO) { dao.borrarRegistro(registro) } }
     fun borrarTodoElHistorial() { viewModelScope.launch(Dispatchers.IO) { dao.borrarTodoElHistorial() } }
+
+    /**
+     * Guarda un registro ingresado manualmente desde los campos de texto.
+     */
+    fun guardarRegistroManual(
+        context: Context,
+        litrosTxt: String,
+        precioTxt: String,
+        compradorTxt: String
+    ) {
+        val litros = litrosTxt.replace(",", ".").toDoubleOrNull()
+        
+        // Validación de litros
+        if (litros == null || litros <= 0.0) {
+            Toast.makeText(context, "Por favor ingresa una cantidad válida de litros", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Precio por defecto si falla o está vacío
+        val precio = precioTxt.replace(",", ".").toDoubleOrNull() ?: _precioPorDefecto.value
+        
+        // Comprador por defecto si está vacío
+        val comprador = if (compradorTxt.isBlank()) "General" else compradorTxt
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val nuevoRegistro = RegistroLeche(
+                litros = litros,
+                precioPorLitro = precio,
+                comprador = comprador,
+                fecha = System.currentTimeMillis(),
+                notaVoz = "Ingreso manual"
+            )
+            
+            dao.insertarRegistroLeche(nuevoRegistro)
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "¡Guardado manual! $litros L para $comprador", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     fun procesarEntradaVoz(context: Context, textoVoz: String) {
         viewModelScope.launch {
@@ -98,20 +146,31 @@ class LecheViewModel(
 
     private suspend fun ejecutarProcesamientoLocal(context: Context, texto: String) {
         val procesador = ProcesadorVozLocal(_precioPorDefecto.value)
-        val registros = procesador.procesarFrase(texto)
-        
-        if (registros.isEmpty()) {
-            withContext(Dispatchers.Main) { Toast.makeText(context, "No reconocido: '$texto'", Toast.LENGTH_SHORT).show() }
-            return
-        }
+        val resultado = procesador.clasificarIntencion(texto)
 
-        withContext(Dispatchers.IO) {
-            registros.forEach { r ->
+        when (resultado) {
+            is AccionVoz.Registro -> {
+                val r = resultado.registro
                 val registroNormalizado = r.copy(comprador = normalizarConFuzzy(r.comprador))
-                dao.insertarRegistroLeche(registroNormalizado)
+                withContext(Dispatchers.IO) { dao.insertarRegistroLeche(registroNormalizado) }
+                withContext(Dispatchers.Main) { 
+                    Toast.makeText(context, "Local: Guardado ${r.litros}L para ${r.comprador}", Toast.LENGTH_SHORT).show() 
+                }
+            }
+            is AccionVoz.Consulta -> {
+                val ganancia = dao.obtenerGananciaEntreFechas(resultado.fechaInicio, resultado.fechaFin) ?: 0.0
+                withContext(Dispatchers.Main) {
+                    val mensaje = "Ganancia en el periodo: ${ganancia.formatearDinero()}"
+                    _mensajeConsulta.value = mensaje // Mostramos en el AlertDialog si existe, o Toast
+                    Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
+                }
+            }
+            is AccionVoz.NoEntendido -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "No entendí: '$texto'", Toast.LENGTH_SHORT).show()
+                }
             }
         }
-        withContext(Dispatchers.Main) { Toast.makeText(context, "Local: ${registros.size} registros guardados", Toast.LENGTH_SHORT).show() }
     }
 
     private suspend fun normalizarConFuzzy(nombre: String): String {

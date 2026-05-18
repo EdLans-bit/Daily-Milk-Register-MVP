@@ -13,6 +13,19 @@ import androidx.compose.ui.unit.dp
 import com.emiliano.lechapp.ui.theme.LechAppTheme
 import com.emiliano.lechapp.ui.BotonMicrofono
 class MainActivity : ComponentActivity() {
+    private lateinit var lecheViewModel: LecheViewModel
+
+    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
+        if (keyCode == android.view.KeyEvent.KEYCODE_VOLUME_UP || 
+            keyCode == android.view.KeyEvent.KEYCODE_VOLUME_DOWN) {
+            if (::lecheViewModel.isInitialized) {
+                lecheViewModel.activarMicrofonoDesdeHardware()
+                return true // Consumimos el evento para que no cambie el volumen
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,6 +35,7 @@ class MainActivity : ComponentActivity() {
         val registroViewModel = RegistroViewModel(usuarioDao)   // ← solo aquí, una vez
         val geminiService = GeminiService()
         val lecheViewModel = LecheViewModel(usuarioDao, geminiService)
+        this.lecheViewModel = lecheViewModel // Guardamos referencia para los botones físicos
 
         setContent {
             LechAppTheme {

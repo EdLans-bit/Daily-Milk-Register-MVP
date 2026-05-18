@@ -18,55 +18,45 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.flow.SharedFlow
 import java.util.Locale
 
 @Composable
 fun BotonMicrofono(
     onTextoEscuchado: (String) -> Unit,
     modifier: Modifier = Modifier,
+    externalTrigger: SharedFlow<Unit>? = null
 ) {
     val context = LocalContext.current
-    var isListening by remember { mutableStateOf(value = false) }
+    var isListening by remember { mutableStateOf(false) }
     
     val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
     
     val recognitionListener = remember {
         object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {
-                isListening = true
-            }
-
+            override fun onReadyForSpeech(params: Bundle?) { isListening = true }
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {
-                isListening = false
-            }
-
+            override fun onEndOfSpeech() { isListening = false }
             override fun onError(error: Int) {
                 isListening = false
                 val message = when (error) {
                     SpeechRecognizer.ERROR_AUDIO -> "Error de audio"
-                    SpeechRecognizer.ERROR_CLIENT -> "Error del cliente"
-                    SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Permisos insuficientes"
-                    SpeechRecognizer.ERROR_NETWORK -> "Error de red"
-                    SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Tiempo de espera de red agotado"
-                    SpeechRecognizer.ERROR_NO_MATCH -> "No se encontró coincidencia"
-                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "El reconocedor está ocupado"
-                    SpeechRecognizer.ERROR_SERVER -> "Error del servidor"
-                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Tiempo de espera de habla agotado"
-                    else -> "Error desconocido"
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Ocupado..."
+                    SpeechRecognizer.ERROR_NO_MATCH -> "No te entendí"
+                    else -> "Error: $error"
                 }
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                if (error != SpeechRecognizer.ERROR_NO_MATCH) {
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
             }
-
             override fun onResults(results: Bundle?) {
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
                     onTextoEscuchado(matches[0])
                 }
             }
-
             override fun onPartialResults(partialResults: Bundle?) {}
             override fun onEvent(eventType: Int, params: Bundle?) {}
         }
@@ -74,40 +64,47 @@ fun BotonMicrofono(
 
     DisposableEffect(Unit) {
         speechRecognizer.setRecognitionListener(recognitionListener)
-        onDispose {
-            speechRecognizer.destroy()
+        onDispose { speechRecognizer.destroy() }
+    }
+
+    val intent = remember {
+        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission(),
+        ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) {
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            }
-            speechRecognizer.startListening(intent)
+        if (isGranted) speechRecognizer.startListening(intent)
+        else Toast.makeText(context, "Permiso denegado", Toast.LENGTH_SHORT).show()
+    }
+
+    val handleAction = {
+        if (isListening) {
+            speechRecognizer.stopListening()
+            isListening = false
         } else {
-            Toast.makeText(context, "Permiso de micrófono denegado", Toast.LENGTH_SHORT).show()
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    // Escuchar el disparador externo (Botones de Volumen)
+    LaunchedEffect(externalTrigger) {
+        externalTrigger?.collect {
+            handleAction()
         }
     }
 
     FloatingActionButton(
-        onClick = {
-            if (isListening) {
-                speechRecognizer.stopListening()
-                isListening = false
-            } else {
-                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-            }
-        },
+        onClick = { handleAction() },
         modifier = modifier,
-        containerColor = if (isListening) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+        containerColor = if (isListening) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer
     ) {
         Icon(
             imageVector = if (isListening) Icons.Default.Mic else Icons.Default.MicNone,
-            contentDescription = if (isListening) "Escuchando..." else "Presiona para hablar"
+            contentDescription = "Micrófono"
         )
     }
 }

@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -12,7 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.emiliano.lechapp.ui.BotonMicrofono
 import java.text.SimpleDateFormat
@@ -68,27 +72,111 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val precioDefecto by viewModel.precioPorDefecto.collectAsState()
 
+    // Estados para el registro manual
+    var litrosTxt by remember { mutableStateOf("") }
+    var compradorTxt by remember { mutableStateOf("") }
+    var precioTxt by remember { mutableStateOf(precioDefecto.toString()) }
+
+    // Actualizar el campo de precio si cambia el precio por defecto globalmente
+    LaunchedEffect(precioDefecto) {
+        if (precioTxt.isEmpty() || precioTxt == "0.0") {
+            precioTxt = precioDefecto.toString()
+        }
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
-        Text("Venta de Hoy", style = MaterialTheme.typography.headlineMedium)
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        OutlinedTextField(
-            value = precioDefecto.toString(),
-            onValueChange = { valor -> valor.toDoubleOrNull()?.let { viewModel.actualizarPrecioPorDefecto(it) } },
-            label = { Text("Precio por Litro ($)") },
-            modifier = Modifier.fillMaxWidth()
+        Text(
+            "Nuevo Registro",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        // Panel de Registro Manual
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    "Ingreso Manual",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                OutlinedTextField(
+                    value = litrosTxt,
+                    onValueChange = { litrosTxt = it },
+                    label = { Text("Litros") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = compradorTxt,
+                    onValueChange = { compradorTxt = it },
+                    label = { Text("Comprador") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = precioTxt,
+                    onValueChange = { precioTxt = it },
+                    label = { Text("Precio por Litro ($)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.guardarRegistroManual(
+                            context = context,
+                            litrosTxt = litrosTxt,
+                            precioTxt = precioTxt,
+                            compradorTxt = compradorTxt
+                        )
+                        // Limpiar campos después de guardar exitosamente
+                        litrosTxt = ""
+                        compradorTxt = ""
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Guardar Registro")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            "O usa el Micrófono",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         BotonMicrofono(
             onTextoEscuchado = { viewModel.procesarEntradaVoz(context, it) },
-            modifier = Modifier.size(120.dp)
+            modifier = Modifier.size(100.dp),
+            externalTrigger = viewModel.triggerMicrofono
         )
         
         Text(
@@ -96,6 +184,8 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(top = 16.dp)
         )
+        
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
