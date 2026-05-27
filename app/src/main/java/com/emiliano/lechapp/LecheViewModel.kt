@@ -1,7 +1,6 @@
 package com.emiliano.lechapp
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +12,8 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Date
+import java.util.Locale
 
 enum class FiltroTiempo { DIA, SEMANA, MES, TODO }
 
@@ -73,7 +74,8 @@ class LecheViewModel(
         context: Context,
         litrosTxt: String,
         precioTxt: String,
-        compradorTxt: String
+        compradorTxt: String,
+        fechaTxt: String
     ) {
         val litros = litrosTxt.replace(",", ".").toDoubleOrNull()
         
@@ -89,12 +91,20 @@ class LecheViewModel(
         // Comprador por defecto si está vacío
         val comprador = if (compradorTxt.isBlank()) "General" else compradorTxt
 
+        // Convertimos el texto de la fecha ("dd / MM / yyyy") a milisegundos (Long)
+        val formato = java.text.SimpleDateFormat("dd / MM / yyyy", java.util.Locale.getDefault())
+        val fechaMilis = try {
+            formato.parse(fechaTxt)?.time ?: System.currentTimeMillis()
+        } catch (e: Exception) {
+            System.currentTimeMillis() // Si algo falla, toma la fecha y hora actual
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             val nuevoRegistro = RegistroLeche(
                 litros = litros,
                 precioPorLitro = precio,
                 comprador = comprador,
-                fecha = System.currentTimeMillis(),
+                fecha = fechaMilis,
                 notaVoz = "Ingreso manual"
             )
             
@@ -208,4 +218,20 @@ class LecheViewModel(
         }
         return c.timeInMillis
     }
+
+    fun agruparDatos(registros: List<RegistroLeche>, filtro: FiltroTiempo): Map<String, Double> {
+        val formato = when (filtro) {
+            FiltroTiempo.DIA -> "dd MMM"
+            FiltroTiempo.SEMANA -> "'Sem 'w "
+            FiltroTiempo.MES -> "MMM"
+            FiltroTiempo.TODO   -> "yyyy"
+        }
+
+        val sdf = SimpleDateFormat(formato, java.util.Locale("es", "ES"))
+
+        return registros
+            .groupBy { sdf.format(Date(it.fecha)) }
+            .mapValues { entry -> entry.value.sumOf { it.litros } }
+    }
 }
+

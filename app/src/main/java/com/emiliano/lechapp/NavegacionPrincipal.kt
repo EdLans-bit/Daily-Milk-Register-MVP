@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -74,6 +75,13 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
 
     // Estados para el registro manual
     var litrosTxt by remember { mutableStateOf("") }
+    // Control del calendario
+    var showDatePicker by remember { mutableStateOf(false) }
+    var fechaSeleccionada by remember {
+        mutableStateOf(java.text.SimpleDateFormat("dd / MM / yyyy", java.util.Locale.getDefault()).format(java.util.Date()))
+    }
+    @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+    val datePickerState = androidx.compose.material3.rememberDatePickerState()
     var compradorTxt by remember { mutableStateOf("") }
     var precioTxt by remember { mutableStateOf(precioDefecto.toString()) }
 
@@ -97,7 +105,6 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )
-
         // Panel de Registro Manual
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -109,6 +116,48 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
+                // --- INICIO DEL CALENDARIO ---
+                @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+                if (showDatePicker) {
+                    androidx.compose.material3.DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            androidx.compose.material3.TextButton(onClick = {
+                                datePickerState.selectedDateMillis?.let { millis ->
+                                    val formatter = java.text.SimpleDateFormat("dd / MM / yyyy", java.util.Locale.getDefault())
+                                    fechaSeleccionada = formatter.format(java.util.Date(millis))
+                                }
+                                showDatePicker = false
+                            }) { Text("Aceptar") }
+                        },
+                        dismissButton = {
+                            androidx.compose.material3.TextButton(onClick = { showDatePicker = false }) { Text("Cancelar") }
+                        }
+                    ) {
+                        androidx.compose.material3.DatePicker(state = datePickerState)
+                    }
+                }
+
+                OutlinedTextField(
+                    value = fechaSeleccionada,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Fecha de Ordeño / Venta") },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        androidx.compose.material3.IconButton(onClick = { showDatePicker = true }) {
+                            androidx.compose.material3.Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Default.DateRange,
+                                contentDescription = "Abrir Calendario"
+                            )
+                        }
+                    },
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                // --- FIN DEL CALENDARIO ---
 
                 OutlinedTextField(
                     value = litrosTxt,
@@ -131,19 +180,6 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
                     singleLine = true
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = precioTxt,
-                    onValueChange = { precioTxt = it },
-                    label = { Text("Precio por Litro ($)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    singleLine = true
-                )
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
@@ -151,12 +187,14 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
                         viewModel.guardarRegistroManual(
                             context = context,
                             litrosTxt = litrosTxt,
-                            precioTxt = precioTxt,
-                            compradorTxt = compradorTxt
+                            precioTxt = "",
+                            compradorTxt = compradorTxt,
+                            fechaTxt = fechaSeleccionada
                         )
                         // Limpiar campos después de guardar exitosamente
                         litrosTxt = ""
                         compradorTxt = ""
+
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -192,10 +230,14 @@ fun PantallaEntrada(viewModel: LecheViewModel) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PantallaEstadisticas(viewModel: LecheViewModel) {
-    val registros by viewModel.registrosFiltrados.collectAsState()
-    val totalGanancia by viewModel.gananciaTotal.collectAsState()
-    val totalLitros by viewModel.totalLitros.collectAsState()
-    val filtro by viewModel.filtroActual.collectAsState()
+    var periodoSeleccionado by remember {mutableStateOf(FiltroTiempo.SEMANA)}
+    val registros by viewModel.registrosFiltrados.collectAsState(initial = emptyList())
+    val totalGanancia by viewModel.gananciaTotal.collectAsState(initial = 0.0)
+    val totalLitros by viewModel.totalLitros.collectAsState(initial = 0.0)
+    val filtro by viewModel.filtroActual.collectAsState(initial = FiltroTiempo.SEMANA)
+    val datosAgrupados = remember(registros, filtro) {
+        viewModel.agruparDatos(registros, filtro)
+    }
 
     val registrosPorFecha = remember(registros) {
         registros.groupBy { formatTimestampToDate(it.fecha) }
@@ -211,6 +253,11 @@ fun PantallaEstadisticas(viewModel: LecheViewModel) {
                 Text(totalGanancia.formatearDinero(), style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
                 Text("${String.format(Locale.getDefault(), "%.1f", totalLitros)} Litros totales", style = MaterialTheme.typography.bodyMedium)
             }
+        }
+        if (datosAgrupados.isNotEmpty()) {
+            GraficoBarras(datosAgrupados)
+        } else {
+            Text("No hay datos para este periodo", modifier = Modifier.padding(16.dp))
         }
 
         Row(
@@ -294,24 +341,88 @@ fun RegistroItemConBorrado(registro: RegistroLeche, onBorrar: (RegistroLeche) ->
 @Composable
 fun PantallaPerfilDetalle(viewModel: LecheViewModel) {
     val perfil by viewModel.perfilUsuario.collectAsState()
-    val totalHistoricoLitros by viewModel.totalLitros.collectAsState() 
+    val totalHistoricoLitros by viewModel.totalLitros.collectAsState()
     val totalGananciaHistorica by viewModel.gananciaTotal.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    // --- Variables de Memoria para el Precio Maestro ---
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("PreferenciasLechApp", android.content.Context.MODE_PRIVATE)
+    val precioGuardado = sharedPreferences.getFloat("PRECIO_BASE", 0f)
+    var precioTxt by remember { mutableStateOf(if (precioGuardado > 0) precioGuardado.toString() else "") }
+
+    // Agregamos scroll vertical por si la pantalla es pequeña
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(androidx.compose.foundation.rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // 1. Cabecera del Perfil (Tu código original)
         Icon(Icons.Default.AccountCircle, contentDescription = null, modifier = Modifier.size(100.dp), tint = MaterialTheme.colorScheme.primary)
-        
+
         Text(perfil?.nombreGanadero ?: "Ganadero", style = MaterialTheme.typography.headlineMedium)
         Text("${perfil?.cantidadAnimales ?: 0} Animales", style = MaterialTheme.typography.bodyLarge)
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // 2. Estadísticas Históricas (Tu código original)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            EstadisticaSimple("Litros Totales", String.format(Locale.getDefault(), "%.1f", totalHistoricoLitros))
+            EstadisticaSimple("Litros Totales", String.format(java.util.Locale.getDefault(), "%.1f", totalHistoricoLitros))
             EstadisticaSimple("Dinero Total", totalGananciaHistorica.formatearDinero())
         }
-        
-        Spacer(modifier = Modifier.height(64.dp))
-        
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // 3. Tarjeta de Configuración de Precio (Lo Nuevo)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    "Configuración de Registro",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    "Define el precio base por litro. Se usará automáticamente en todos tus nuevos registros diarios.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.ui.graphics.Color.Gray,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                OutlinedTextField(
+                    value = precioTxt,
+                    onValueChange = { precioTxt = it },
+                    label = { Text("Precio por Litro ($)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    leadingIcon = { Text("$", modifier = Modifier.padding(start = 16.dp)) }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        val nuevoPrecio = precioTxt.replace(",", ".").toFloatOrNull()
+                        if (nuevoPrecio != null && nuevoPrecio > 0) {
+                            sharedPreferences.edit().putFloat("PRECIO_BASE", nuevoPrecio).apply()
+                            android.widget.Toast.makeText(context, "Precio maestro actualizado a $$nuevoPrecio", android.widget.Toast.LENGTH_SHORT).show()
+                        } else {
+                            android.widget.Toast.makeText(context, "Ingresa un precio válido", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Guardar Precio Maestro")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
         Button(
             onClick = { viewModel.borrarTodoElHistorial() },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
@@ -320,11 +431,110 @@ fun PantallaPerfilDetalle(viewModel: LecheViewModel) {
         }
     }
 }
-
 @Composable
 fun EstadisticaSimple(label: String, valor: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(valor, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Text(label, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
+fun PantallaPerfil(context: android.content.Context) {
+    // 1. Instanciamos la memoria de SharedPreferences
+    val sharedPreferences = context.getSharedPreferences("PreferenciasLechApp", android.content.Context.MODE_PRIVATE)
+
+    // 2. Leemos el precio guardado (por defecto 0.0) para mostrarlo al entrar
+    val precioGuardado = sharedPreferences.getFloat("PRECIO_BASE", 0f)
+    var precioTxt by remember { mutableStateOf(if (precioGuardado > 0) precioGuardado.toString() else "") }
+
+    // 3. Diseño visual del Perfil
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Configuración de Perfil",
+            style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 32.dp, top = 16.dp)
+        )
+
+        androidx.compose.material3.Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    "Precio Maestro",
+                    style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    "Define el precio base por litro. Este valor se usará automáticamente en todos tus nuevos registros diarios.",
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.ui.graphics.Color.Gray,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                androidx.compose.material3.OutlinedTextField(
+                    value = precioTxt,
+                    onValueChange = { precioTxt = it },
+                    label = { Text("Precio por Litro ($)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    ),
+                    singleLine = true,
+                    leadingIcon = { Text("$", modifier = Modifier.padding(start = 16.dp)) }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                androidx.compose.material3.Button(
+                    onClick = {
+
+                        val nuevoPrecio = precioTxt.replace(",", ".").toFloatOrNull()
+                        if (nuevoPrecio != null && nuevoPrecio > 0) {
+                            sharedPreferences.edit().putFloat("PRECIO_BASE", nuevoPrecio).apply()
+                            android.widget.Toast.makeText(context, "Precio base actualizado a $$nuevoPrecio", android.widget.Toast.LENGTH_SHORT).show()
+                        } else {
+                            android.widget.Toast.makeText(context, "Ingresa un precio válido", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Guardar Configuración")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GraficoBarras(datos: Map<String, Double>) {
+    val valores = datos.values.toList()
+    val maximo = valores.maxOrNull() ?: 1.0
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        datos.forEach { (etiqueta, valor) ->
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .height((120 * (valor / maximo)).dp)
+                        .width(30.dp)
+                        .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(4.dp))
+                )
+                Text(text = etiqueta.take(3), style = MaterialTheme.typography.labelSmall)
+            }
+        }
     }
 }

@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.emiliano.lechapp.ui.theme.LechAppTheme
 import com.emiliano.lechapp.ui.BotonMicrofono
+import android.content.Intent
+
 class MainActivity : ComponentActivity() {
     private lateinit var lecheViewModel: LecheViewModel
 
