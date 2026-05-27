@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_general"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="80dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mi Perfil"
+            android:textColor="@color/primary"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            app:drawableStartCompat="@android:drawable/ic_menu_myplaces"
+            android:drawablePadding="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+            <ImageView
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:background="@drawable/circle_border_primary"
+                android:src="@android:drawable/ic_menu_camera"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="Foto de perfil"/>
+            <TextView
+                android:id="@+id/tv_nombre_usuario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Usuario"
+                android:textColor="@color/text_main"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Administrador de Finca"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"/>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="@color/surface"
+            app:strokeColor="@color/border"
+            app:strokeWidth="1.5dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Configuración de Registro" android:textColor="@color/primary" android:textStyle="bold" android:textSize="16sp" android:layout_marginBottom="8dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Define el precio base por litro. Se usará automáticamente en tus nuevos registros diarios." android:textColor="@color/text_muted" android:textSize="13sp" android:layout_marginBottom="12dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@android:drawable/ic_menu_manage"
+                    android:layout_marginBottom="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_precio_maestro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:hint="Precio por Litro ($)" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_guardar_precio"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:text="Guardar Precio Maestro"
+                    app:cornerRadius="25dp"
+                    android:backgroundTint="@color/primary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_borrar_historial"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Borrar Todo el Historial"
+            android:textColor="@color/btn_danger_text"
+            app:backgroundTint="@color/btn_danger_bg"
+            app:cornerRadius="25dp"
+            android:layout_marginBottom="16dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:strokeColor="@color/border" android:layout_marginBottom="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="14dp" android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:src="@android:drawable/ic_menu_info_details"
+                        app:tint="@color/primary"
+                        android:contentDescription="Icono animales"/>
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="14dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Animales Registrados" android:textColor="@color/text_muted" android:textSize="13sp" android:textStyle="bold"/>
+                        <TextView android:id="@+id/tv_animales" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="5 Animales" android:textColor="@color/text_main" android:textSize="18sp" android:textStyle="bold"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

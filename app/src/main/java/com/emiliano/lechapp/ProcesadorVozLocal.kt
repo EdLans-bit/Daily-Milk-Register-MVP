@@ -64,12 +64,40 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
     private fun extraerUnicoRegistro(frase: String): RegistroLeche? {
         val timestamp = extraerFechaRelativa(frase)
         
+        var textoModificado = frase
+        // Mapeo de expresiones comunes a valores numéricos para facilitar el regex
+        val reemplazos = mapOf(
+            "un litro y medio" to "1.5 litros",
+            "litro y medio" to "1.5 litros",
+            "un litro y cuarto" to "1.25 litros",
+            "litro y cuarto" to "1.25 litros",
+            "medio litro" to "0.5 litros",
+            "un cuarto de litro" to "0.25 litros",
+            "cuarto de litro" to "0.25 litros",
+            "tres cuartos de litro" to "0.75 litros",
+            "tres cuartos" to "0.75 litros",
+            "un litro" to "1 litro"
+        )
+
+        for ((key, value) in reemplazos) {
+            if (textoModificado.contains(key)) {
+                textoModificado = textoModificado.replace(key, value)
+            }
+        }
+        
         val regex = "(\\d+(?:[.,]\\d+)?)\\s*(?:litros|litro|l\\b)(?:\\s+a\\s+([\\wáéíóúñ]+))?(?:\\s+a\\s+(\\d+))?".toRegex()
-        val match = regex.find(frase) ?: return null
+        val match = regex.find(textoModificado) ?: return null
 
         val litros = match.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 0.0
-        val comprador = match.groupValues.getOrNull(2) ?: "General"
-        val precio = match.groupValues.getOrNull(3)?.toDoubleOrNull() ?: precioPorDefecto
+        var comprador = match.groupValues.getOrNull(2)?.trim()?.takeIf { it.isNotBlank() } ?: "General"
+        var precio = match.groupValues.getOrNull(3)?.toDoubleOrNull() ?: precioPorDefecto
+
+        // Heurística: Si el comprador es puramente numérico y no hay un tercer grupo (precio),
+        // es probable que el usuario haya dicho "X litros a [PRECIO]" omitiendo el nombre.
+        if (comprador.toDoubleOrNull() != null && match.groupValues.getOrNull(3).isNullOrBlank()) {
+            precio = comprador.toDoubleOrNull() ?: precioPorDefecto
+            comprador = "General"
+        }
 
         if (litros <= 0.0) return null
 

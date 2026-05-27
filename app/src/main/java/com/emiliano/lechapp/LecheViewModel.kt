@@ -3,6 +3,7 @@ package com.emiliano.lechapp
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +22,16 @@ class LecheViewModel(
     private val dao: UsuarioDao,
     private val geminiService: GeminiService,
 ) : ViewModel() {
+
+    class Factory(private val dao: UsuarioDao, private val geminiService: GeminiService) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(LecheViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return LecheViewModel(dao, geminiService) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
 
     private val _precioPorDefecto = MutableStateFlow(2000.0)
     val precioPorDefecto: StateFlow<Double> = _precioPorDefecto.asStateFlow()
@@ -220,18 +231,28 @@ class LecheViewModel(
     }
 
     fun agruparDatos(registros: List<RegistroLeche>, filtro: FiltroTiempo): Map<String, Double> {
-        val formato = when (filtro) {
-            FiltroTiempo.DIA -> "dd MMM"
-            FiltroTiempo.SEMANA -> "'Sem 'w "
-            FiltroTiempo.MES -> "MMM"
-            FiltroTiempo.TODO   -> "yyyy"
+        val registrosOrdenados = registros.sortedBy { it.fecha }
+        return when (filtro) {
+            FiltroTiempo.DIA -> {
+                registrosOrdenados.groupBy { SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it.fecha)) }
+                    .mapValues { it.value.sumOf { r -> r.litros } }
+            }
+            FiltroTiempo.SEMANA -> {
+                registrosOrdenados.groupBy { SimpleDateFormat("EEE", Locale.getDefault()).format(Date(it.fecha)) }
+                    .mapValues { it.value.sumOf { r -> r.litros } }
+            }
+            FiltroTiempo.MES -> {
+                // Agrupar por semanas del mes: "Sem 1", "Sem 2", etc.
+                registrosOrdenados.groupBy {
+                    val cal = Calendar.getInstance().apply { timeInMillis = it.fecha }
+                    "Sem ${cal.get(Calendar.WEEK_OF_MONTH)}"
+                }.mapValues { it.value.sumOf { r -> r.litros } }
+            }
+            FiltroTiempo.TODO -> {
+                registrosOrdenados.groupBy { SimpleDateFormat("MMM", Locale.getDefault()).format(Date(it.fecha)) }
+                    .mapValues { it.value.sumOf { r -> r.litros } }
+            }
         }
-
-        val sdf = SimpleDateFormat(formato, java.util.Locale("es", "ES"))
-
-        return registros
-            .groupBy { sdf.format(Date(it.fecha)) }
-            .mapValues { entry -> entry.value.sumOf { it.litros } }
     }
 }
 

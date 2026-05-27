@@ -1,121 +1,81 @@
 package com.emiliano.lechapp
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.emiliano.lechapp.ui.theme.LechAppTheme
-import com.emiliano.lechapp.ui.BotonMicrofono
 import android.content.Intent
+import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.view.KeyEvent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.emiliano.lechapp.databinding.ActivityMainBinding
+import java.util.*
 
-class MainActivity : ComponentActivity() {
-    private lateinit var lecheViewModel: LecheViewModel
+class MainActivity : AppCompatActivity() {
 
-    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
-        if (keyCode == android.view.KeyEvent.KEYCODE_VOLUME_UP || 
-            keyCode == android.view.KeyEvent.KEYCODE_VOLUME_DOWN) {
-            if (::lecheViewModel.isInitialized) {
-                lecheViewModel.activarMicrofonoDesdeHardware()
-                return true // Consumimos el evento para que no cambie el volumen
+    private lateinit var binding: ActivityMainBinding
+    private val lecheViewModel: LecheViewModel by viewModels {
+        val database = AppDatabase.getDatabase(this)
+        LecheViewModel.Factory(database.usuarioDao(), GeminiService())
+    }
+
+    private val speechRecognizerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            val spokenText = results?.get(0)
+            if (spokenText != null) {
+                lecheViewModel.procesarEntradaVoz(this, spokenText)
             }
         }
-        return super.onKeyDown(keyCode, event)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val database = AppDatabase.getDatabase(this)
-        val usuarioDao = database.usuarioDao()
-        val registroViewModel = RegistroViewModel(usuarioDao)   // ← solo aquí, una vez
-        val geminiService = GeminiService()
-        val lecheViewModel = LecheViewModel(usuarioDao, geminiService)
-        this.lecheViewModel = lecheViewModel // Guardamos referencia para los botones físicos
-
-        setContent {
-            LechAppTheme {
-                var usuarioRegistrado by remember { mutableStateOf<Boolean?>(null) }
-
-                LaunchedEffect(Unit) {
-                    val perfil = usuarioDao.obtenerPerfil()
-                    usuarioRegistrado = (perfil != null)
-                }
-
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    when (usuarioRegistrado) {
-                        null -> {
-                            // Cargando: muestra spinner mientras consulta la BD
-                            Box(contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator()
-                            }
-                        }
-                        false -> {
-                            // Primera vez: mostrar pantalla de registro
-                            PantallaRegistro { nombre, animales ->
-                                registroViewModel.guardarGanadero(nombre, animales)
-                                usuarioRegistrado = true
-                            }
-                        }
-                        true -> {
-                            // Ya registrado: mostrar navegación por pestañas
-                            NavegacionPrincipal(lecheViewModel)
-                        }
-                    }
-                }
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_registro -> replaceFragment(RegistroFragment())
+                R.id.nav_estadisticas -> replaceFragment(EstadisticasFragment())
+                R.id.nav_perfil -> replaceFragment(PerfilFragment())
             }
+            true
+        }
+
+        // Cargar fragmento inicial
+        if (savedInstanceState == null) {
+            binding.bottomNavigation.selectedItemId = R.id.nav_registro
+        }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, fragment)
+            .commit()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            lecheViewModel.activarMicrofonoDesdeHardware()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    fun iniciarReconocimientoVoz() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Dicta los datos (ej: 50 litros a Juan)")
+        }
+        try {
+            speechRecognizerLauncher.launch(intent)
+        } catch (e: Exception) {
+            // Manejar error si no hay motor de búsqueda por voz
         }
     }
 }
-@Composable
-fun PantallaRegistro(onRegistroExitoso: (String, String) -> Unit) {
-    var nombre by remember { mutableStateOf("") }
-    var animales by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Registro de Ganadero", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(24.dp))
-
-        OutlinedTextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre Completo") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = animales,
-            onValueChange = { animales = it },
-            label = { Text("Número de animales") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                if (nombre.isNotBlank() && animales.isNotBlank()) {
-                    onRegistroExitoso(nombre, animales)
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = nombre.isNotBlank() && animales.isNotBlank()
-        ) {
-            Text("Comenzar")
-        }
-    }
-}
-
