@@ -21,7 +21,11 @@ class RegistroFragment : Fragment() {
 
     private val viewModel: LecheViewModel by activityViewModels {
         val database = AppDatabase.getDatabase(requireContext())
-        LecheViewModel.Factory(database.usuarioDao(), GeminiService())
+        LecheViewModel.Factory(
+            database.usuarioDao(),
+            database.registrosRelacionalesDao(),
+            GeminiService()
+        )
     }
     private var fechaSeleccionada = Calendar.getInstance()
 

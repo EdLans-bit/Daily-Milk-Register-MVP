@@ -20,14 +20,19 @@ enum class FiltroTiempo { DIA, SEMANA, MES, TODO }
 
 class LecheViewModel(
     private val dao: UsuarioDao,
+    val relacionalesDao: RegistrosRelacionalesDao,
     private val geminiService: GeminiService,
 ) : ViewModel() {
 
-    class Factory(private val dao: UsuarioDao, private val geminiService: GeminiService) : ViewModelProvider.Factory {
+    class Factory(
+        private val dao: UsuarioDao,
+        private val relacionalesDao: RegistrosRelacionalesDao,
+        private val geminiService: GeminiService
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(LecheViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return LecheViewModel(dao, geminiService) as T
+                return LecheViewModel(dao, relacionalesDao, geminiService) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
@@ -53,9 +58,17 @@ class LecheViewModel(
     fun limpiarConsulta() { _mensajeConsulta.value = null }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val registrosFiltrados: StateFlow<List<RegistroLeche>> = _filtroActual.flatMapLatest { filtro ->
-        if (filtro == FiltroTiempo.TODO) dao.obtenerTodosLosRegistros()
-        else dao.obtenerRegistrosFiltrados(calcularMilisegundosDesde(filtro))
+    val registrosFiltrados: StateFlow<List<RegistroConDetalles>> = _filtroActual.flatMapLatest { filtro ->
+        // Por ahora usamos la consulta de todos los registros con detalles
+        // En una app real filtraríamos por fecha también aquí
+        dao.obtenerRegistrosConDetalles()
+    }.map { registros ->
+        val filtro = _filtroActual.value
+        if (filtro == FiltroTiempo.TODO) registros
+        else {
+            val desde = calcularMilisegundosDesde(filtro)
+            registros.filter { it.registro.fecha >= desde }
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -79,6 +92,39 @@ class LecheViewModel(
     fun borrarTodoElHistorial() { viewModelScope.launch(Dispatchers.IO) { dao.borrarTodoElHistorial() } }
 
     /**
+     * Analiza la salud de un animal basándose en la caída de producción.
+     */
+    fun analizarSaludAnimal(animalId: Int, onResult: (String, List<RegistroLeche>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val haceSieteDias = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L)
+            val registros = relacionalesDao.obtenerRegistrosRecientesAnimal(animalId, haceSieteDias)
+
+            val resultado = when {
+                registros.isEmpty() -> "Sin registros"
+                registros.size < 3 -> "Insuficientes datos"
+                else -> {
+                    val hoy = registros.first().litros
+                    val anteriores = registros.drop(1)
+                    val promedioAnterior = anteriores.map { it.litros }.average()
+
+                    val umbralAlerta = promedioAnterior * 0.85
+
+                    if (hoy < umbralAlerta) {
+                        val porcentajeCaida = ((promedioAnterior - hoy) / promedioAnterior) * 100
+                        String.format(Locale.getDefault(), "Alerta: Caída de producción del %.1f%%", porcentajeCaida)
+                    } else {
+                        "Saludable"
+                    }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                onResult(resultado, registros)
+            }
+        }
+    }
+
+    /**
      * Guarda un registro ingresado manualmente desde los campos de texto.
      */
     fun guardarRegistroManual(
@@ -90,31 +136,32 @@ class LecheViewModel(
     ) {
         val litros = litrosTxt.replace(",", ".").toDoubleOrNull()
         
-        // Validación de litros
         if (litros == null || litros <= 0.0) {
             Toast.makeText(context, "Por favor ingresa una cantidad válida de litros", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Precio por defecto si falla o está vacío
         val precio = precioTxt.replace(",", ".").toDoubleOrNull() ?: _precioPorDefecto.value
-        
-        // Comprador por defecto si está vacío
-        val comprador = if (compradorTxt.isBlank()) "General" else compradorTxt
+        val nombreComprador = if (compradorTxt.isBlank()) "General" else compradorTxt
 
-        // Convertimos el texto de la fecha ("dd / MM / yyyy") a milisegundos (Long)
-        val formato = java.text.SimpleDateFormat("dd / MM / yyyy", java.util.Locale.getDefault())
+        val formato = SimpleDateFormat("dd / MM / yyyy", Locale.getDefault())
         val fechaMilis = try {
             formato.parse(fechaTxt)?.time ?: System.currentTimeMillis()
         } catch (e: Exception) {
-            System.currentTimeMillis() // Si algo falla, toma la fecha y hora actual
+            System.currentTimeMillis()
         }
 
         viewModelScope.launch(Dispatchers.IO) {
+            val comprador = relacionalesDao.findCompradorByName(nombreComprador)
+                ?: Comprador(nombre = nombreComprador, precioBase = 0.0).let {
+                    val id = relacionalesDao.insertComprador(it)
+                    it.copy(idComprador = id.toInt())
+                }
+
             val nuevoRegistro = RegistroLeche(
                 litros = litros,
                 precioPorLitro = precio,
-                comprador = comprador,
+                compradorId = comprador.idComprador,
                 fecha = fechaMilis,
                 notaVoz = "Ingreso manual"
             )
@@ -122,7 +169,7 @@ class LecheViewModel(
             dao.insertarRegistroLeche(nuevoRegistro)
 
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "¡Guardado manual! $litros L para $comprador", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "¡Guardado manual! $litros L para $nombreComprador", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -131,7 +178,7 @@ class LecheViewModel(
         viewModelScope.launch {
             if (NetworkUtils.estaOnline(context)) {
                 val respuestaIA = geminiService.procesarVozConIA(textoVoz)
-                if (respuestaIA != null && respuestaIA.contains("[")) {
+                if (respuestaIA != null && (respuestaIA.contains("[") || respuestaIA.contains("{"))) {
                     procesarJsonIA(context, respuestaIA, textoVoz)
                 } else {
                     ejecutarProcesamientoLocal(context, textoVoz)
@@ -144,20 +191,52 @@ class LecheViewModel(
 
     private suspend fun procesarJsonIA(context: Context, jsonStr: String, original: String) {
         try {
-            val array = JSONArray(jsonStr.replace("```json", "").replace("```", "").trim())
+            val cleanJson = jsonStr.replace("```json", "").replace("```", "").trim()
+            val array = if (cleanJson.startsWith("[")) JSONArray(cleanJson) else JSONArray().put(org.json.JSONObject(cleanJson))
+            
             for (i in 0 until array.length()) {
                 val json = array.getJSONObject(i)
-                if (json.optString("intencion") == "consulta") {
+                val intencion = json.optString("intencion")
+                
+                if (intencion == "consulta") {
                     realizarConsulta(json.getString("fechaInicio"), json.getString("fechaFin"))
-                } else {
-                    val r = RegistroLeche(
-                        litros = json.optDouble("litros", 0.0),
-                        precioPorLitro = json.optDouble("precio", _precioPorDefecto.value),
-                        comprador = normalizarConFuzzy(json.optString("comprador", "General")),
-                        notaVoz = original,
-                        fecha = parsearFechaIA(json.optString("fecha"))
-                    )
-                    if (r.litros > 0) dao.insertarRegistroLeche(r)
+                } else if (intencion == "registro_leche" || intencion == "registro") {
+                    val litros = json.optDouble("litros", 0.0)
+                    if (litros <= 0) continue
+
+                    val nombreComprador = json.optString("comprador", "General")
+                    val nombreAnimal = json.optString("identificador_animal", "General")
+                    val esLote = json.optBoolean("es_lote", false)
+                    val precioIA = if (json.has("precio")) json.getDouble("precio") else _precioPorDefecto.value
+                    val fechaIA = parsearFechaIA(json.optString("fecha"))
+
+                    withContext(Dispatchers.IO) {
+                        val comprador = relacionalesDao.findCompradorByName(nombreComprador)
+                            ?: Comprador(nombre = nombreComprador, precioBase = 0.0).let {
+                                val id = relacionalesDao.insertComprador(it)
+                                it.copy(idComprador = id.toInt())
+                            }
+
+                        val animalLote = relacionalesDao.findAnimalLoteByName(nombreAnimal)
+                            ?: AnimalLote(identificador = nombreAnimal, esLoteGeneral = esLote).let {
+                                val id = relacionalesDao.insertAnimalLote(it)
+                                it.copy(idAnimal = id.toInt())
+                            }
+
+                        val nuevoRegistro = RegistroLeche(
+                            litros = litros,
+                            precioPorLitro = precioIA,
+                            fecha = fechaIA,
+                            notaVoz = original,
+                            compradorId = comprador.idComprador,
+                            animalId = animalLote.idAnimal
+                        )
+                        dao.insertarRegistroLeche(nuevoRegistro)
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "IA: Registro guardado (${litros}L)", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -171,18 +250,32 @@ class LecheViewModel(
 
         when (resultado) {
             is AccionVoz.Registro -> {
-                val r = resultado.registro
-                val registroNormalizado = r.copy(comprador = normalizarConFuzzy(r.comprador))
-                withContext(Dispatchers.IO) { dao.insertarRegistroLeche(registroNormalizado) }
-                withContext(Dispatchers.Main) { 
-                    Toast.makeText(context, "Local: Guardado ${r.litros}L para ${r.comprador}", Toast.LENGTH_SHORT).show() 
+                withContext(Dispatchers.IO) {
+                    val comprador = relacionalesDao.findCompradorByName(resultado.nombreComprador)
+                        ?: Comprador(nombre = resultado.nombreComprador, precioBase = 0.0).let {
+                            val id = relacionalesDao.insertComprador(it)
+                            it.copy(idComprador = id.toInt())
+                        }
+
+                    val nuevoRegistro = RegistroLeche(
+                        litros = resultado.litros,
+                        precioPorLitro = resultado.precio,
+                        compradorId = comprador.idComprador,
+                        fecha = resultado.fecha,
+                        notaVoz = resultado.notaVoz
+                    )
+                    dao.insertarRegistroLeche(nuevoRegistro)
+                    
+                    withContext(Dispatchers.Main) { 
+                        Toast.makeText(context, "Local: Guardado ${resultado.litros}L para ${resultado.nombreComprador}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             is AccionVoz.Consulta -> {
                 val ganancia = dao.obtenerGananciaEntreFechas(resultado.fechaInicio, resultado.fechaFin) ?: 0.0
                 withContext(Dispatchers.Main) {
                     val mensaje = "Ganancia en el periodo: ${ganancia.formatearDinero()}"
-                    _mensajeConsulta.value = mensaje // Mostramos en el AlertDialog si existe, o Toast
+                    _mensajeConsulta.value = mensaje
                     Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
                 }
             }
@@ -192,12 +285,6 @@ class LecheViewModel(
                 }
             }
         }
-    }
-
-    private suspend fun normalizarConFuzzy(nombre: String): String {
-        // En un caso real, obtendríamos solo los nombres únicos de la BD
-        val existentes = registrosFiltrados.value.map { it.comprador }.distinct()
-        return TextoUtils.encontrarMasCercano(nombre, existentes)
     }
 
     private fun parsearFechaIA(fechaStr: String?): Long {
@@ -230,29 +317,27 @@ class LecheViewModel(
         return c.timeInMillis
     }
 
-    fun agruparDatos(registros: List<RegistroLeche>, filtro: FiltroTiempo): Map<String, Double> {
-        val registrosOrdenados = registros.sortedBy { it.fecha }
+    fun agruparDatos(registros: List<RegistroConDetalles>, filtro: FiltroTiempo): Map<String, Double> {
+         val registrosOrdenados = registros.sortedBy { it.registro.fecha }
         return when (filtro) {
             FiltroTiempo.DIA -> {
-                registrosOrdenados.groupBy { SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it.fecha)) }
-                    .mapValues { it.value.sumOf { r -> r.litros } }
+                registrosOrdenados.groupBy { SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it.registro.fecha)) }
+                    .mapValues { it.value.sumOf { r -> r.registro.litros } }
             }
             FiltroTiempo.SEMANA -> {
-                registrosOrdenados.groupBy { SimpleDateFormat("EEE", Locale.getDefault()).format(Date(it.fecha)) }
-                    .mapValues { it.value.sumOf { r -> r.litros } }
+                registrosOrdenados.groupBy { SimpleDateFormat("EEE", Locale.getDefault()).format(Date(it.registro.fecha)) }
+                    .mapValues { it.value.sumOf { r -> r.registro.litros } }
             }
             FiltroTiempo.MES -> {
-                // Agrupar por semanas del mes: "Sem 1", "Sem 2", etc.
                 registrosOrdenados.groupBy {
-                    val cal = Calendar.getInstance().apply { timeInMillis = it.fecha }
+                    val cal = Calendar.getInstance().apply { timeInMillis = it.registro.fecha }
                     "Sem ${cal.get(Calendar.WEEK_OF_MONTH)}"
-                }.mapValues { it.value.sumOf { r -> r.litros } }
+                }.mapValues { it.value.sumOf { r -> r.registro.litros } }
             }
             FiltroTiempo.TODO -> {
-                registrosOrdenados.groupBy { SimpleDateFormat("MMM", Locale.getDefault()).format(Date(it.fecha)) }
-                    .mapValues { it.value.sumOf { r -> r.litros } }
+                registrosOrdenados.groupBy { SimpleDateFormat("MMM", Locale.getDefault()).format(Date(it.registro.fecha)) }
+                    .mapValues { it.value.sumOf { r -> r.registro.litros } }
             }
         }
     }
 }
-

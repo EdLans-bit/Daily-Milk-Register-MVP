@@ -3,7 +3,15 @@ package com.emiliano.lechapp
 import java.util.*
 
 sealed class AccionVoz {
-    data class Registro(val registro: RegistroLeche) : AccionVoz()
+    data class Registro(
+        val litros: Double,
+        val nombreAnimal: String,
+        val esLote: Boolean,
+        val nombreComprador: String,
+        val precio: Double,
+        val fecha: Long,
+        val notaVoz: String
+    ) : AccionVoz()
     data class Consulta(val fechaInicio: Long, val fechaFin: Long) : AccionVoz()
     object NoEntendido : AccionVoz()
 }
@@ -21,9 +29,8 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
             return procesarConsulta(t)
         }
 
-        // 2. Intento de Registro (Plan B)
-        val registro = extraerUnicoRegistro(t)
-        return if (registro != null) AccionVoz.Registro(registro) else AccionVoz.NoEntendido
+        // 2. Intento de Registro
+        return extraerRegistroMejorado(t) ?: AccionVoz.NoEntendido
     }
 
     private fun procesarConsulta(texto: String): AccionVoz {
@@ -61,11 +68,11 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
         return AccionVoz.Consulta(inicio, fin)
     }
 
-    private fun extraerUnicoRegistro(frase: String): RegistroLeche? {
+    private fun extraerRegistroMejorado(frase: String): AccionVoz.Registro? {
         val timestamp = extraerFechaRelativa(frase)
-        
         var textoModificado = frase
-        // Mapeo de expresiones comunes a valores numéricos para facilitar el regex
+        
+        // Mapeo extendido de jergas y fracciones de litro
         val reemplazos = mapOf(
             "un litro y medio" to "1.5 litros",
             "litro y medio" to "1.5 litros",
@@ -76,35 +83,66 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
             "cuarto de litro" to "0.25 litros",
             "tres cuartos de litro" to "0.75 litros",
             "tres cuartos" to "0.75 litros",
-            "un litro" to "1 litro"
+            "un litro" to "1 litro",
+            "una onza de litro" to "0.029 litros",
+            "dos onzas de litro" to "0.059 litros",
+            "cuatro onzas de litro" to "0.118 litros",
+            "4 onzas de litro" to "0.118 litros"
         )
 
         for ((key, value) in reemplazos) {
-            if (textoModificado.contains(key)) {
-                textoModificado = textoModificado.replace(key, value)
-            }
+            textoModificado = textoModificado.replace(key, value)
         }
+
+        // 1. Extraer Cantidad de Litros
+        val regexLitros = "(\\d+(?:[.,]\\d+)?)\\s*(?:litros|litro|l\\b)".toRegex()
+        val matchLitros = regexLitros.find(textoModificado) ?: return null
+        val litros = matchLitros.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 0.0
         
-        val regex = "(\\d+(?:[.,]\\d+)?)\\s*(?:litros|litro|l\\b)(?:\\s+a\\s+([\\wáéíóúñ]+))?(?:\\s+a\\s+(\\d+))?".toRegex()
-        val match = regex.find(textoModificado) ?: return null
-
-        val litros = match.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 0.0
-        var comprador = match.groupValues.getOrNull(2)?.trim()?.takeIf { it.isNotBlank() } ?: "General"
-        var precio = match.groupValues.getOrNull(3)?.toDoubleOrNull() ?: precioPorDefecto
-
-        // Heurística: Si el comprador es puramente numérico y no hay un tercer grupo (precio),
-        // es probable que el usuario haya dicho "X litros a [PRECIO]" omitiendo el nombre.
-        if (comprador.toDoubleOrNull() != null && match.groupValues.getOrNull(3).isNullOrBlank()) {
-            precio = comprador.toDoubleOrNull() ?: precioPorDefecto
-            comprador = "General"
-        }
-
         if (litros <= 0.0) return null
 
-        return RegistroLeche(
+        // 2. Extracción de Animal/Lote
+        var nombreAnimal = "General"
+        var esLote = true
+
+        val regexVaca = "(?:de la vaca|de|vaca)\\s+([\\wáéíóúñ]+)".toRegex()
+        val regexLote = "(?:del lote|lote|grupo)\\s+([\\wáéíóúñ]+)".toRegex()
+
+        val matchVaca = regexVaca.find(textoModificado)
+        val matchLote = regexLote.find(textoModificado)
+
+        if (matchVaca != null) {
+            nombreAnimal = matchVaca.groupValues[1].trim().replaceFirstChar { it.uppercase() }
+            esLote = false
+        } else if (matchLote != null) {
+            nombreAnimal = matchLote.groupValues[1].trim().replaceFirstChar { it.uppercase() }
+            esLote = true
+        }
+
+        // 3. Extracción de Comprador
+        var nombreComprador = "General"
+        val regexComprador = "(?:para|al|a)\\s+([\\wáéíóúñ\\s]+?)(?:\\s+a\\s+\\d+|$)".toRegex()
+        val matchComprador = regexComprador.find(textoModificado)
+        
+        if (matchComprador != null) {
+            val posibleComprador = matchComprador.groupValues[1].trim()
+            if (!posibleComprador.contains("lote") && !posibleComprador.contains("vaca")) {
+                nombreComprador = posibleComprador.split(" ").take(2).joinToString(" ")
+                    .replaceFirstChar { it.uppercase() }
+            }
+        }
+
+        // 4. Extracción de Precio
+        val regexPrecio = "(?:a|precio)\\s+(\\d+)".toRegex()
+        val matchPrecio = regexPrecio.find(textoModificado)
+        val precio = matchPrecio?.groupValues?.getOrNull(1)?.toDoubleOrNull() ?: precioPorDefecto
+
+        return AccionVoz.Registro(
             litros = litros,
-            precioPorLitro = precio,
-            comprador = comprador.replaceFirstChar { it.uppercase() },
+            nombreAnimal = nombreAnimal,
+            esLote = esLote,
+            nombreComprador = nombreComprador,
+            precio = precio,
             fecha = timestamp,
             notaVoz = frase.trim()
         )
@@ -115,7 +153,6 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
         when {
             frase.contains("antier") -> cal.add(Calendar.DAY_OF_YEAR, -2)
             frase.contains("ayer") -> cal.add(Calendar.DAY_OF_YEAR, -1)
-            // Lógica simplificada para días de la semana
             frase.contains("lunes") -> ajustarDiaSemana(cal, Calendar.MONDAY)
             frase.contains("martes") -> ajustarDiaSemana(cal, Calendar.TUESDAY)
             frase.contains("miercoles") -> ajustarDiaSemana(cal, Calendar.WEDNESDAY)

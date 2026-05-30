@@ -9,7 +9,7 @@ import com.emiliano.lechapp.databinding.ItemEntregaBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class EntregaAdapter(private val onDeleteClick: (RegistroLeche) -> Unit) : ListAdapter<RegistroLeche, EntregaAdapter.ViewHolder>(DiffCallback()) {
+class EntregaAdapter(private val onDeleteClick: (RegistroLeche) -> Unit) : ListAdapter<RegistroConDetalles, EntregaAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemEntregaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -24,8 +24,9 @@ class EntregaAdapter(private val onDeleteClick: (RegistroLeche) -> Unit) : ListA
         private val binding: ItemEntregaBinding,
         private val onDeleteClick: (RegistroLeche) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(registro: RegistroLeche) {
-            binding.tvComprador.text = registro.comprador
+        fun bind(item: RegistroConDetalles) {
+            val registro = item.registro
+            binding.tvComprador.text = item.comprador?.nombre ?: "Sin comprador"
             binding.tvLitros.text = "${registro.litros} Litros"
             
             val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
@@ -37,8 +38,11 @@ class EntregaAdapter(private val onDeleteClick: (RegistroLeche) -> Unit) : ListA
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<RegistroLeche>() {
-        override fun areItemsTheSame(oldItem: RegistroLeche, newItem: RegistroLeche) = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: RegistroLeche, newItem: RegistroLeche) = oldItem == newItem
+    class DiffCallback : DiffUtil.ItemCallback<RegistroConDetalles>() {
+        override fun areItemsTheSame(oldItem: RegistroConDetalles, newItem: RegistroConDetalles) = 
+            oldItem.registro.id == newItem.registro.id
+            
+        override fun areContentsTheSame(oldItem: RegistroConDetalles, newItem: RegistroConDetalles) = 
+            oldItem == newItem
     }
 }

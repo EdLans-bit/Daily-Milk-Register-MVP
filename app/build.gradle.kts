@@ -82,4 +82,5 @@ dependencies {
 
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.generativeai)
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

@@ -9,6 +9,10 @@
         android:icon="@android:drawable/ic_menu_sort_by_size"
         android:title="Estadísticas" />
     <item
+        android:id="@+id/nav_salud"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Salud" />
+    <item
         android:id="@+id/nav_perfil"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="Perfil" />

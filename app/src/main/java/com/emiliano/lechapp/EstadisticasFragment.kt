@@ -31,7 +31,11 @@ class EstadisticasFragment : Fragment() {
 
     private val viewModel: LecheViewModel by activityViewModels {
         val database = AppDatabase.getDatabase(requireContext())
-        LecheViewModel.Factory(database.usuarioDao(), GeminiService())
+        LecheViewModel.Factory(
+            database.usuarioDao(),
+            database.registrosRelacionalesDao(),
+            GeminiService()
+        )
     }
     private val adapter = EntregaAdapter { registro ->
         viewModel.borrarRegistro(registro)
@@ -73,7 +77,7 @@ class EstadisticasFragment : Fragment() {
         }
     }
 
-    private fun actualizarGrafica(registros: List<RegistroLeche>, filtro: FiltroTiempo) {
+    private fun actualizarGrafica(registros: List<RegistroConDetalles>, filtro: FiltroTiempo) {
         val datos = viewModel.agruparDatos(registros, filtro)
         
         val composeView = ComposeView(requireContext()).apply {

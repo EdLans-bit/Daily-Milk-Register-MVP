@@ -14,16 +14,27 @@ class GeminiService {
     suspend fun procesarVozConIA(textoVoz: String): String? {
         val fechaActual = java.time.LocalDate.now()
         val prompt = """
-            Eres un asistente inteligente para ganaderos. Procesa el texto y devuelve un ARRAY de JSON.
+            Actúa como un extractor de datos para una aplicación de registro lechero.
             FECHA ACTUAL: $fechaActual.
+            
+            Analiza el texto y devuelve un ARRAY de JSON.
             
             REGLAS:
             1. MULTIACCIÓN: Si el usuario pide varias cosas (ej. registrar y consultar), devuelve un objeto por cada acción en el array.
-            2. TIEMPO RELATIVO: Si dice "ayer", calcula la fecha real basándote en $fechaActual. Devuelve las fechas en formato "YYYY-MM-DD".
-            3. NORMALIZACIÓN: Unifica nombres de compradores (ej. "Marco", "Marquitos", "Marcos" -> siempre "Marcos").
+            2. TIEMPO RELATIVO: Si dice "ayer", calcula la fecha real basándote en $fechaActual.
+            3. NORMALIZACIÓN: Unifica nombres de compradores y animales.
             
             FORMATOS DE OBJETO:
-            - Registro: {"intencion": "registro", "litros": 10.5, "precio": 2000, "comprador": "Marcos", "fecha": "YYYY-MM-DD"}
+            - Registro Leche:
+            {
+              "intencion": "registro_leche",
+              "litros": Double,
+              "identificador_animal": String (Nombre de la vaca o lote. Si no se menciona, devuelve "General"),
+              "es_lote": Boolean (true si parece referirse a un grupo o lote, false si es una sola vaca),
+              "comprador": String (Nombre del comprador. Si no se menciona, devuelve "General"),
+              "precio": Double (Opcional, si se menciona),
+              "fecha": "yyyy-MM-dd" (Opcional, si menciona fechas específicas o relativas)
+            }
             - Consulta: {"intencion": "consulta", "fechaInicio": "YYYY-MM-DD", "fechaFin": "YYYY-MM-DD"}
 
             Texto: "$textoVoz"

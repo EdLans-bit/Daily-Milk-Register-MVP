@@ -19,6 +19,10 @@ interface UsuarioDao {
     @Query("SELECT * FROM registros_leche ORDER BY fecha DESC")
     fun obtenerTodosLosRegistros(): Flow<List<RegistroLeche>>
 
+    @Transaction
+    @Query("SELECT * FROM registros_leche ORDER BY fecha DESC")
+    fun obtenerRegistrosConDetalles(): Flow<List<RegistroConDetalles>>
+
     @Query("SELECT * FROM registros_leche WHERE fecha >= :desde ORDER BY fecha DESC")
     fun obtenerRegistrosFiltrados(desde: Long): Flow<List<RegistroLeche>>
 

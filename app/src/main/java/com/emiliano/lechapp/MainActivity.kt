@@ -16,7 +16,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val lecheViewModel: LecheViewModel by viewModels {
         val database = AppDatabase.getDatabase(this)
-        LecheViewModel.Factory(database.usuarioDao(), GeminiService())
+        LecheViewModel.Factory(
+            database.usuarioDao(),
+            database.registrosRelacionalesDao(),
+            GeminiService()
+        )
     }
 
     private val speechRecognizerLauncher = registerForActivityResult(
@@ -41,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_registro -> replaceFragment(RegistroFragment())
                 R.id.nav_estadisticas -> replaceFragment(EstadisticasFragment())
+                R.id.nav_salud -> replaceFragment(SaludDashboardFragment())
                 R.id.nav_perfil -> replaceFragment(PerfilFragment())
             }
             true
