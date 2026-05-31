@@ -9,9 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.emiliano.lechapp.databinding.FragmentPerfilBinding
-import kotlinx.coroutines.flow.collectLatest
 
 class PerfilFragment : Fragment() {
 
@@ -54,13 +52,18 @@ class PerfilFragment : Fragment() {
             mostrarDialogoBorrado()
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.perfilUsuario.collectLatest { perfil ->
-                perfil?.let {
-                    binding.tvNombreUsuario.text = it.nombreGanadero
-                    binding.tvAnimales.text = "${it.cantidadAnimales} Animales"
-                }
-            }
+        binding.cardGestionarAnimales.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, GestionAnimalesFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.cardGestionarCompradores.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, GestionCompradoresFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 

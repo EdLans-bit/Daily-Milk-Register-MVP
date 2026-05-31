@@ -49,6 +49,67 @@ class SaludDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupDropdown()
+        setupRentabilidad()
+        setupExportacion()
+    }
+
+    private fun setupExportacion() {
+        binding.btnExportarTexto.setOnClickListener {
+            val registros = viewModel.registrosFiltrados.value
+            lifecycleScope.launch {
+                val texto = viewModel.generarTextoCompartir(registros)
+                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(android.content.Intent.EXTRA_TEXT, texto)
+                }
+                startActivity(android.content.Intent.createChooser(intent, "Compartir vía"))
+            }
+        }
+
+        binding.btnExportarCSV.setOnClickListener {
+            val registros = viewModel.registrosFiltrados.value
+            lifecycleScope.launch {
+                val uri = viewModel.generarArchivoCSV(requireContext(), registros)
+                uri?.let { compartirArchivo(it, "text/csv", "reporte_leche.csv") }
+            }
+        }
+
+        binding.btnExportarPDF.setOnClickListener {
+            val registros = viewModel.registrosFiltrados.value
+            lifecycleScope.launch {
+                val uri = viewModel.generarArchivoPDF(requireContext(), registros)
+                uri?.let { compartirArchivo(it, "application/pdf", "reporte_leche.pdf") }
+            }
+        }
+    }
+
+    private fun compartirArchivo(uri: android.net.Uri, mimeType: String, nombre: String) {
+        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = mimeType
+            putExtra(android.content.Intent.EXTRA_STREAM, uri)
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(android.content.Intent.createChooser(intent, "Enviar $nombre"))
+    }
+
+    private fun setupRentabilidad() {
+        viewModel.calcularRentabilidadSemanal()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.ingresosSemanales.collectLatest { ingresos ->
+                    binding.tvIngresosPlaceholder.text = "$ %.2f".format(ingresos)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.gastosSemanales.collectLatest { gastos ->
+                    binding.tvGastosPlaceholder.text = "$ %.2f".format(gastos)
+                }
+            }
+        }
     }
 
     private fun setupDropdown() {
