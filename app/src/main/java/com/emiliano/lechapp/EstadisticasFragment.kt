@@ -23,62 +23,85 @@ import androidx.compose.ui.geometry.CornerRadius
 import com.emiliano.lechapp.databinding.FragmentEstadisticasBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+
 
 class EstadisticasFragment : Fragment() {
 
     private var _binding: FragmentEstadisticasBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: LecheViewModel by activityViewModels {
-        val database = AppDatabase.getDatabase(requireContext())
+    private val lecheViewModel: LecheViewModel by activityViewModels {
         LecheViewModel.Factory(
-            database.usuarioDao(),
-            database.registrosRelacionalesDao(),
+            AppDatabase.getDatabase(requireContext()).usuarioDao(),
+            AppDatabase.getDatabase(requireContext()).registrosRelacionalesDao(),
             GeminiService()
         )
     }
     private val adapter = EntregaAdapter { registro ->
-        viewModel.borrarRegistro(registro)
+        lecheViewModel.borrarRegistro(registro)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentEstadisticasBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        return inflater.inflate(R.layout.fragment_estadisticas, container, false)
     }
 
+    // 2. Paste the new onViewCreated right below it
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.rvEntregas.adapter = adapter
+        // Find all the elements by their exact XML IDs
+        val btnDia = view.findViewById<Button>(R.id.btn_dia)
+        val btnSem = view.findViewById<Button>(R.id.btn_sem)
+        val btnMes = view.findViewById<Button>(R.id.btn_mes)
+        val btnAnio = view.findViewById<Button>(R.id.btn_anio)
 
-        binding.toggleGroupTime.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) {
-                val filtro = when (checkedId) {
-                    R.id.btn_dia -> FiltroTiempo.DIA
-                    R.id.btn_sem -> FiltroTiempo.SEMANA
-                    R.id.btn_mes -> FiltroTiempo.MES
-                    R.id.btn_anio -> FiltroTiempo.TODO // Asumimos TODO para año
-                    else -> FiltroTiempo.TODO
-                }
-                viewModel.cambiarFiltro(filtro)
-            }
+        val chartContainer = view.findViewById<LinearLayout>(R.id.chartContainer)
+
+        val tvPrediccion = view.findViewById<TextView>(R.id.tvPrediccionPeriodo)
+        val btnComparacion = view.findViewById<Button>(R.id.btnFiltroPersonalizado)
+        val capaBloqueo = view.findViewById<LinearLayout>(R.id.capaBloqueoEstadisticas)
+        val btnDesbloquear = view.findViewById<Button>(R.id.btnDesbloquearEstadisticas)
+
+        val rvEntregas = view.findViewById<RecyclerView>(R.id.rvUltimasEntregas)
+
+        // Click listeners here
+        btnDia.setOnClickListener {
+            btnDia.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
+            btnSem.setTextColor(android.graphics.Color.parseColor("#757575"))
+            btnMes.setTextColor(android.graphics.Color.parseColor("#757575"))
+            btnAnio.setTextColor(android.graphics.Color.parseColor("#757575"))
+
+            // 2. Activar la lógica de tu ViewModel
+            lecheViewModel.cambiarFiltro(FiltroTiempo.DIA)
+
+        }
+        btnSem.setOnClickListener {
+            btnSem.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
+            btnDia.setTextColor(android.graphics.Color.parseColor("#757575"))
+            btnMes.setTextColor(android.graphics.Color.parseColor("#757575"))
+            btnAnio.setTextColor(android.graphics.Color.parseColor("#757575"))
+
+            lecheViewModel.cambiarFiltro(FiltroTiempo.SEMANA)
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            combine(viewModel.registrosFiltrados, viewModel.filtroActual) { registros, filtro ->
-                registros to filtro
-            }.collectLatest { (registros, filtro) ->
-                adapter.submitList(registros)
-                actualizarGrafica(registros, filtro)
-            }
-        }
+        capaBloqueo.visibility = View.VISIBLE
     }
 
     private fun actualizarGrafica(registros: List<RegistroConDetalles>, filtro: FiltroTiempo) {
-        val datos = viewModel.agruparDatos(registros, filtro)
+        val datos = lecheViewModel.agruparDatos(registros, filtro)
         
         val composeView = ComposeView(requireContext()).apply {
             setContent {

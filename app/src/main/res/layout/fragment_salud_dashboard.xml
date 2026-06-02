@@ -1,258 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
-    tools:context=".SaludDashboardFragment">
+    android:background="#F8F9FA">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <LinearLayout
+        <!-- TÍTULO DE LA PANTALLA -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16.dp">
+            android:text="Dashboard de Salud"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#1B5E20"
+            android:layout_marginBottom="24dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dashboard de Salud"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:layout_marginBottom="16.dp"/>
+        <!-- SECCIÓN GRATIS: RANKING DE VACAS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selecciona Animal o Lote"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#757575"
+            android:layout_marginBottom="12dp"/>
 
-            <!-- Selector de Animal -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Seleccionar Animal o Lote"
-                android:layout_marginBottom="24.dp">
+        <!-- Aquí se inyectan las tarjetas que acabas de crear -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvRankingVacas"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="32dp"
+            tools:listitem="@layout/item_vaca_ranking" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/autoCompleteAnimal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
+        <!-- SECCIÓN PREMIUM: INTELIGENCIA INDIVIDUAL -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tendencia de Producción (7 días)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#111111"
+            android:layout_marginBottom="12dp"/>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <!-- Contenedor dual (Contenido vs Candado) -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <!-- Tarjeta de Alerta de Salud -->
+            <!-- 1. CONTENIDO DE LA VACA (Se difumina si es Gratis) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardSalud"
+                android:id="@+id/layoutAnalisisIndividual"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16.dp"
-                app:cardElevation="4.dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
                 app:strokeWidth="0dp"
-                android:layout_marginBottom="24.dp">
+                app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
-                    android:id="@+id/layoutEstadoSalud"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24.dp"
-                    android:gravity="center"
-                    android:background="#E0E0E0">
-
-                    <ImageView
-                        android:id="@+id/imgSaludIcon"
-                        android:layout_width="64.dp"
-                        android:layout_height="64.dp"
-                        android:src="@android:drawable/ic_dialog_info"
-                        app:tint="#757575"
-                        android:layout_marginBottom="12.dp"/>
+                    android:padding="20dp">
 
                     <TextView
-                        android:id="@+id/tvEstadoSalud"
+                        android:id="@+id/tvNombreVacaSeleccionada"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Selecciona un animal"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#333333"
-                        android:gravity="center"/>
-
-                    <TextView
-                        android:id="@+id/tvSaludDetalle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="El análisis se basa en los últimos 7 días"
+                        tools:text="Vaca Seleccionada: Lola (#045)"
                         android:textSize="14sp"
-                        android:textColor="#666666"
-                        android:layout_marginTop="4.dp"/>
+                        android:textStyle="bold"
+                        android:textColor="#1B5E20"
+                        android:layout_marginBottom="8dp"/>
 
+                    <TextView
+                        android:id="@+id/tvPrediccionIndividual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Predicción mañana: 18.5L"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#111111"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvInsightIndividual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Rendimiento estable en los últimos 3 días."
+                        android:textSize="16sp"
+                        android:textColor="#555555"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- LA ÚNICA ALERTA DEL SISTEMA -->
+                    <TextView
+                        android:id="@+id/tvAlertaIndividual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_circle_green"
+                        android:backgroundTint="#FFEBEE"
+                        android:textColor="#C62828"
+                        android:padding="16dp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        tools:text="Caída crítica del 15% detectada. Posible problema de salud."/>
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tendencia de Producción (7 días)"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:layout_marginBottom="12.dp"/>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="240.dp"
-                app:cardCornerRadius="16.dp"
-                app:cardElevation="2.dp"
-                app:strokeWidth="0dp"
-                android:layout_marginBottom="24.dp">
-
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/lineChartProduccion"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="8.dp" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Exportar Datos"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:layout_marginBottom="12.dp"/>
-
+            <!-- 2. CAPA DE BLOQUEO (Candado Premium) -->
             <LinearLayout
+                android:id="@+id/capaBloqueoSalud"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_height="match_parent"
+                android:background="#E6FAFAFA"
+                android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginBottom="24.dp">
+                android:padding="24dp"
+                android:elevation="4dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnExportarTexto"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="0.dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4.dp"
-                    android:text="Texto"
-                    app:icon="@android:drawable/ic_menu_share" />
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@android:drawable/ic_secure"
+                    android:layout_marginBottom="12dp"
+                    app:tint="#757575"/>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnExportarCSV"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="0.dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="4.dp"
-                    android:text="CSV"
-                    app:icon="@android:drawable/ic_menu_save" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnExportarPDF"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="0.dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4.dp"
-                    android:text="PDF"
-                    app:icon="@android:drawable/ic_menu_agenda" />
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Resumen Financiero"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:layout_marginBottom="12.dp"/>
-
-            <!-- Sección de Rentabilidad -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0.dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8.dp"
-                    app:cardCornerRadius="12.dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16.dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ingresos Totales"
-                            android:textSize="12sp"
-                            android:textColor="#757575"/>
-                        <TextView
-                            android:id="@+id/tvIngresosPlaceholder"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$ 0.00"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#4CAF50"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0.dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8.dp"
-                    app:cardCornerRadius="12.dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16.dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Gastos Insumos"
-                            android:textSize="12sp"
-                            android:textColor="#757575"/>
-                        <TextView
-                            android:id="@+id/tvGastosPlaceholder"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$ 0.00"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#F44336"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="200.dp"
-                android:layout_marginTop="16.dp"
-                app:cardCornerRadius="12.dp">
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Inteligencia Individual Premium"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#111111"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mejora tu plan para desbloquear alertas predictivas por vaca y tendencias exactas."
+                    android:textSize="14sp"
+                    android:textColor="#555555"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="20dp"/>
+
+                <!-- Botón Naranja de tu diseño -->
+                <Button
+                    android:id="@+id/btnDesbloquearSalud"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Gráfica de Rentabilidad\n(Próximamente)"
-                    android:textColor="#BDBDBD"/>
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    android:layout_height="wrap_content"
+                    android:text="DESBLOQUEAR AHORA"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:backgroundTint="#FF9800"
+                    android:padding="12dp"
+                    app:cornerRadius="8dp"/>
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -8,6 +8,10 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
+data class RankingVaca(
+    val idAnimal: Int,
+    val identificador: String,
+    val totalProduccion: Double)
 @Dao
 interface RegistrosRelacionalesDao {
 
@@ -73,4 +77,43 @@ interface RegistrosRelacionalesDao {
 
     @Query("SELECT COALESCE(SUM(monto), 0.0) FROM gastos WHERE fecha >= :fechaLimite")
     suspend fun calcularGastosTotales(fechaLimite: Long): Double
+
+    // ====================================================================
+    // --- Inteligencia Predictiva y Alertas (Fase 1) ---
+    // ====================================================================
+
+    // 1. Consulta Analítica: Agrupa litros por día.
+    // Si animalIdEspecifico es NULL, trae el lote global. Si tiene ID, trae esa vaca.
+    @Query("""
+        SELECT SUM(litros) as totalLitros 
+        FROM registros_leche 
+        WHERE fecha BETWEEN :inicioMs AND :finMs 
+        AND (:animalIdEspecifico IS NULL OR animalId = :animalIdEspecifico)
+        GROUP BY date(fecha / 1000, 'unixepoch', 'localtime')
+        ORDER BY fecha ASC
+    """)
+    suspend fun obtenerHistorialAgrupadoPorDia(
+        inicioMs: Long,
+        finMs: Long,
+        animalIdEspecifico: Int? = null
+    ): List<Double>
+
+    // 2. Consulta de Validación: Cuenta los días reales con datos
+    @Query("""
+        SELECT COUNT(DISTINCT date(fecha / 1000, 'unixepoch')) 
+        FROM registros_leche 
+        WHERE (:animalIdEspecifico IS NULL OR animalId = :animalIdEspecifico)
+    """)
+    suspend fun contarDiasConRegistros(animalIdEspecifico: Int? = null): Int
+
+
+    @Query("""
+    SELECT a.idAnimal, a.identificador, SUM(r.litros) as totalProduccion
+    FROM animales_lotes a
+    INNER JOIN registros_leche r ON a.idAnimal = r.animalId
+    WHERE r.fecha BETWEEN :inicioMs AND :finMs
+    GROUP BY a.idAnimal
+    ORDER BY totalProduccion DESC
+""")
+    suspend fun obtenerRankingVacas(inicioMs: Long, finMs: Long): List<RankingVaca>
 }

@@ -17,16 +17,28 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Date
-import java.util.Locale
+import kotlin.math.abs
 
 enum class FiltroTiempo { DIA, SEMANA, MES, TODO }
 
 class LecheViewModel(
+    
     private val dao: UsuarioDao,
     val relacionalesDao: RegistrosRelacionalesDao,
-    private val geminiService: GeminiService,
+    private val geminiService: GeminiService
 ) : ViewModel() {
+
+    private val _esUsuarioPremium = MutableStateFlow(false)
+    val esUsuarioPremium: StateFlow<Boolean> = _esUsuarioPremium
+    
+    val sensibilidadAlertas = MutableStateFlow(15.0)
+
+    fun activarModoDemoPremium() {
+        _esUsuarioPremium.value = true
+    }
+
+    private val _rankingVacas = MutableStateFlow<List<RankingVaca>>(emptyList())
+    val rankingVacas: StateFlow<List<RankingVaca>> = _rankingVacas
 
     class Factory(
         private val dao: UsuarioDao,
@@ -51,7 +63,6 @@ class LecheViewModel(
     private val _mensajeConsulta = MutableStateFlow<String?>(null)
     val mensajeConsulta: StateFlow<String?> = _mensajeConsulta.asStateFlow()
 
-    // Evento para activar el micrófono desde hardware (botones de volumen)
     private val _triggerMicrofono = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val triggerMicrofono = _triggerMicrofono.asSharedFlow()
 
@@ -72,8 +83,6 @@ class LecheViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val registrosFiltrados: StateFlow<List<RegistroConDetalles>> = _filtroActual.flatMapLatest { filtro ->
-        // Por ahora usamos la consulta de todos los registros con detalles
-        // En una app real filtraríamos por fecha también aquí
         dao.obtenerRegistrosConDetalles()
     }.map { registros ->
         val filtro = _filtroActual.value
@@ -116,9 +125,6 @@ class LecheViewModel(
         }
     }
 
-    /**
-     * Calcula la rentabilidad de los últimos 7 días.
-     */
     fun calcularRentabilidadSemanal() {
         viewModelScope.launch(Dispatchers.IO) {
             val haceSieteDias = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L)
@@ -131,9 +137,6 @@ class LecheViewModel(
         }
     }
 
-    /**
-     * Analiza la salud de un animal basándose en la caída de producción.
-     */
     fun analizarSaludAnimal(animalId: Int, onResult: (String, List<RegistroLeche>) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val haceSieteDias = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L)
@@ -164,10 +167,6 @@ class LecheViewModel(
         }
     }
 
-    /**
-     * Guarda un registro ingresado manualmente vinculando Animal y Comprador.
-     * Si no existen en la BD, los crea automáticamente.
-     */
     fun guardarRegistroManual(
         context: Context,
         litrosTxt: String,
@@ -177,19 +176,15 @@ class LecheViewModel(
         fechaTxt: String
     ) {
         val litros = litrosTxt.replace(",", ".").toDoubleOrNull()
-        
-        // Validación de entrada
         if (litros == null || litros <= 0.0) {
             Toast.makeText(context, "Por favor ingresa una cantidad válida de litros", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Preparar datos básicos
         val precioUI = precioTxt.replace(",", ".").toDoubleOrNull() ?: _precioPorDefecto.value
         val animalFinal = nombreAnimal.ifBlank { "General" }
         val compradorFinal = nombreComprador.ifBlank { "General" }
 
-        // Parsear fecha
         val formato = SimpleDateFormat("dd / MM / yyyy", Locale.getDefault())
         val fechaMilis = try {
             formato.parse(fechaTxt)?.time ?: System.currentTimeMillis()
@@ -198,27 +193,21 @@ class LecheViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            // 1. Lógica de Comprador y Precio
             val compradorExistente = relacionalesDao.findCompradorByName(compradorFinal)
-            
             val (comprador, precioTransaccion) = if (compradorExistente != null) {
-                // Si existe, priorizamos su precioBase pactado
                 compradorExistente to compradorExistente.precioBase
             } else {
-                // Si no existe, lo creamos con el precio que el usuario escribió ahora
                 val nuevoC = Comprador(nombre = compradorFinal, precioBase = precioUI)
                 val id = relacionalesDao.insertComprador(nuevoC)
                 nuevoC.copy(idComprador = id.toInt()) to precioUI
             }
 
-            // 2. Lógica de Animal/Lote
             val animalLote = relacionalesDao.findAnimalLoteByName(animalFinal)
                 ?: AnimalLote(identificador = animalFinal, esLoteGeneral = true).let {
                     val id = relacionalesDao.insertAnimalLote(it)
                     it.copy(idAnimal = id.toInt())
                 }
 
-            // 3. Insertar el Registro de Leche con el precio correcto y IDs
             val nuevoRegistro = RegistroLeche(
                 litros = litros,
                 precioPorLitro = precioTransaccion,
@@ -383,7 +372,7 @@ class LecheViewModel(
     }
 
     fun agruparDatos(registros: List<RegistroConDetalles>, filtro: FiltroTiempo): Map<String, Double> {
-         val registrosOrdenados = registros.sortedBy { it.registro.fecha }
+        val registrosOrdenados = registros.sortedBy { it.registro.fecha }
         return when (filtro) {
             FiltroTiempo.DIA -> {
                 registrosOrdenados.groupBy { SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it.registro.fecha)) }
@@ -406,9 +395,6 @@ class LecheViewModel(
         }
     }
 
-    /**
-     * Genera un resumen de texto para compartir (ideal para WhatsApp).
-     */
     suspend fun generarTextoCompartir(registros: List<RegistroConDetalles>): String = withContext(Dispatchers.Default) {
         val total = registros.sumOf { it.registro.litros }
         val porComprador = registros.groupBy { it.comprador?.nombre ?: "General" }
@@ -425,9 +411,6 @@ class LecheViewModel(
         sb.toString()
     }
 
-    /**
-     * Genera un archivo CSV y devuelve su URI segura.
-     */
     suspend fun generarArchivoCSV(context: Context, registros: List<RegistroConDetalles>): Uri? = withContext(Dispatchers.IO) {
         try {
             val file = File(context.cacheDir, "reporte_leche.csv")
@@ -450,29 +433,23 @@ class LecheViewModel(
         }
     }
 
-    /**
-     * Genera un archivo PDF formal y devuelve su URI segura.
-     */
     suspend fun generarArchivoPDF(context: Context, registros: List<RegistroConDetalles>): Uri? = withContext(Dispatchers.IO) {
         try {
             val pdfDocument = android.graphics.pdf.PdfDocument()
-            val pageInfo = android.graphics.pdf.PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4
+            val pageInfo = android.graphics.pdf.PdfDocument.PageInfo.Builder(595, 842, 1).create()
             val page = pdfDocument.startPage(pageInfo)
             val canvas = page.canvas
             val paint = android.graphics.Paint()
 
-            // Título
             paint.textSize = 20f
             paint.isFakeBoldText = true
             canvas.drawText("Reporte de Producción Lechera", 50f, 50f, paint)
 
-            // Fecha del reporte
             paint.textSize = 12f
             paint.isFakeBoldText = false
             val fechaActual = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
             canvas.drawText("Fecha: $fechaActual", 50f, 80f, paint)
 
-            // Encabezados de Tabla
             var y = 120f
             paint.isFakeBoldText = true
             canvas.drawText("Fecha", 50f, y, paint)
@@ -484,7 +461,6 @@ class LecheViewModel(
             canvas.drawLine(50f, y + 5, 550f, y + 5, paint)
             y += 30f
 
-            // Filas de Datos
             paint.isFakeBoldText = false
             val sdf = SimpleDateFormat("dd/MM", Locale.getDefault())
             registros.forEach { item ->
@@ -506,5 +482,112 @@ class LecheViewModel(
         } catch (e: Exception) {
             null
         }
+    }
+
+    private val _estadoPredictivo = MutableStateFlow<ResultadoPredictivo?>(null)
+    val estadoPredictivo: StateFlow<ResultadoPredictivo?> = _estadoPredictivo
+
+    fun generarAnalisis(registros: List<RegistroLeche>?) {
+        if (registros.isNullOrEmpty()) return
+
+        val produccionActual = registros.last().litros
+        val produccionAnterior = if (registros.size > 1) registros[registros.size - 2].litros else produccionActual
+
+        val variacion = produccionActual - produccionAnterior
+        val porcentajeCaida = if (produccionAnterior > 0) (variacion / produccionAnterior) * 100 else 0.0
+        val promedioSemanal = registros.takeLast(7).map { it.litros }.average()
+
+        val prediccionSimple = (produccionActual + promedioSemanal) / 2
+
+        if (_esUsuarioPremium.value) {
+            val insight = if (variacion < 0) {
+                "La producción actual está un ${String.format("%.1f", Math.abs(porcentajeCaida))}% por debajo de la entrega anterior. Promedio: ${String.format("%.1f", promedioSemanal)}L."
+            } else {
+                "Rendimiento superior al promedio semanal. Estabilidad detectada."
+            }
+
+            val alerta = if (variacion < 0 && produccionActual < promedioSemanal) {
+                AlertaGenerada(NivelAlerta.PRECAUCION, "Se espera una caída continua en los próximos días.")
+            } else null
+
+            _estadoPredictivo.value = ResultadoPredictivo(
+                prediccion = prediccionSimple,
+                insight = insight,
+                alerta = alerta,
+                litrosPredichos = prediccionSimple,
+                insightTexto = insight,
+                porcentajeCaida = abs(porcentajeCaida)
+            )
+        } else {
+            val insight = if (variacion < 0) "La producción está bajando"
+            else if (variacion > 0) "La producción está subiendo"
+            else "La producción está estable"
+
+            val alerta = if (porcentajeCaida <= -sensibilidadAlertas.value) {
+                AlertaGenerada(NivelAlerta.CRITICO, "La producción bajó un ${String.format("%.1f", Math.abs(porcentajeCaida))}%")
+            } else null
+
+            _estadoPredictivo.value = ResultadoPredictivo(
+                prediccion = prediccionSimple,
+                insight = insight,
+                alerta = alerta,
+                litrosPredichos = prediccionSimple,
+                insightTexto = insight,
+                porcentajeCaida = abs(porcentajeCaida)
+            )
+        }
+    }
+
+    fun generarAnalisis(animalId: Int) {
+        val registrosTotales = registrosFiltrados.value
+
+        if (registrosTotales.isEmpty()) {
+            _estadoPredictivo.value = null
+            return
+        }
+
+        val registrosVaca = registrosTotales.filter { it.registro.animalId == animalId }
+        val historialLitros = registrosVaca.map { it.registro.litros }
+
+        val resultado = analizarProduccion(historialLitros)
+        _estadoPredictivo.value = resultado
+    }
+
+    private fun analizarProduccion(historial: List<Double>): ResultadoPredictivo {
+        if (historial.size < 3) {
+            return ResultadoPredictivo(0.0, "Datos insuficientes para análisis", null)
+        }
+
+        val produccionActual = historial.last()
+        val produccionAnterior = historial[historial.size - 2]
+
+        val variacion = if (produccionAnterior > 0) {
+            ((produccionActual - produccionAnterior) / produccionAnterior) * 100
+        } else 0.0
+
+        val periodo = minOf(7, historial.size)
+        val alfa = 2.0 / (periodo + 1)
+
+        var ema = historial.first()
+        for (i in 1 until historial.size) {
+            ema = (historial[i] * alfa) + (ema * (1 - alfa))
+        }
+
+        val alerta = when {
+            variacion <= -15.0 -> AlertaGenerada(NivelAlerta.CRITICO, "Caída crítica del ${String.format("%.1f", Math.abs(variacion))}% en producción.")
+            variacion <= -5.0 -> AlertaGenerada(NivelAlerta.PRECAUCION, "Descenso leve de producción detectado.")
+            else -> null
+        }
+
+        val insightIndividual = if (variacion < 0) "Tendencia a la baja" else "Tendencia estable o al alza"
+
+        return ResultadoPredictivo(
+            prediccion = ema,
+            insight = insightIndividual,
+            alerta = alerta,
+            litrosPredichos = ema,
+            insightTexto = insightIndividual,
+            porcentajeCaida = abs(variacion)
+        )
     }
 }
