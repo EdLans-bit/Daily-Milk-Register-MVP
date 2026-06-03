@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="20dp"
+    app:cardBackgroundColor="@color/surface"
+    app:strokeColor="@color/border"
+    app:strokeWidth="1.5dp"
+    android:layout_marginBottom="12dp">
+    <RelativeLayout 
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content" 
+        android:padding="20dp">
+        <TextView 
+            android:id="@+id/tv_comprador" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:text="Distribuidora Gabriel" 
+            android:textColor="@color/text_main" 
+            android:textStyle="bold" 
+            android:textSize="17sp"/>
+        <TextView 
+            android:id="@+id/tv_fecha"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:text="Hoy, 06:30 AM" 
+            android:layout_below="@id/tv_comprador" 
+            android:textColor="@color/text_muted" 
+            android:textSize="13sp" 
+            android:layout_marginTop="4dp"/>
+        <TextView 
+            android:id="@+id/tv_litros"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:layout_toStartOf="@id/btn_borrar_item"
+            android:layout_centerVertical="true" 
+            android:text="45 Litros" 
+            android:background="@drawable/badge_bg" 
+            android:textColor="@color/primary" 
+            android:textStyle="bold" 
+            android:padding="10dp"
+            android:layout_marginEnd="12dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_borrar_item"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_delete"
+            app:tint="@color/btn_danger_text" />
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

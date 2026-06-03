@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_general">#F9FBF9</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="primary">#1E5631</color>
+    <color name="primary_light">#E8F5E9</color>
+    <color name="accent">#52B788</color>
+    <color name="text_main">#1C251F</color>
+    <color name="text_muted">#6C7A72</color>
+    <color name="border">#E2E8F0</color>
+    <color name="btn_danger_bg">#FEE2E2</color>
+    <color name="btn_danger_text">#991B1B</color>
+
+    <!-- Colores antiguos compatibles -->
+    <color name="accent_light">#E0F7FA</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

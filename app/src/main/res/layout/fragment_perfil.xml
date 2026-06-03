@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- TÍTULO DE LA PANTALLA -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔧"
+                android:textSize="24sp"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Configuración de la Finca"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#1B5E20"/>
+        </LinearLayout>
+
+        <!-- SECCIÓN 1: ADMINISTRACIÓN DE ANIMALES -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnGestionarVacas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="🐄"
+                    android:textSize="24sp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_circle_green"
+                    android:backgroundTint="#E8F5E9"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gestionar Vacas y Lotes"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="#111111"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Añadir, editar o eliminar animales"
+                        android:textSize="14sp"
+                        android:textColor="#757575"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="▶"
+                    android:textColor="#BDBDBD"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- SECCIÓN 2: PARÁMETROS DEL SISTEMA (Regla del Profesor) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parámetros de Inteligencia"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#1B5E20"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Define cuándo el sistema debe emitir una alerta de caída de producción."
+                    android:textSize="14sp"
+                    android:textColor="#757575"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- INPUT: SENSIBILIDAD DE ALERTA -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="#1B5E20"
+                    android:hint="Sensibilidad de Alerta (%)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSensibilidadAlertas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="15"
+                        android:textColor="#111111"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- INPUT: PRECIO MAESTRO -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="#1B5E20"
+                    android:hint="Precio base por Litro ($)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPrecioMaestro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="1200"
+                        android:textColor="#111111"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btnGuardarConfiguracion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="GUARDAR PARÁMETROS"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:backgroundTint="#1B5E20"
+                    android:padding="12dp"
+                    app:cornerRadius="8dp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- SECCIÓN 3: ZONA DE PELIGRO -->
+        <Button
+            android:id="@+id/btnBorrarHistorial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BORRAR TODO EL HISTORIAL"
+            android:textColor="#C62828"
+            android:textStyle="bold"
+            android:backgroundTint="#FFEBEE"
+            android:padding="16dp"
+            app:cornerRadius="12dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#FFCDD2"/>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
