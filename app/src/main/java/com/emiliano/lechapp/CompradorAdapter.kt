@@ -8,11 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.emiliano.lechapp.databinding.ItemCompradorBinding
 import java.util.Locale
 
-class CompradorAdapter(private val onDeleteClick: (Comprador) -> Unit) : ListAdapter<Comprador, CompradorAdapter.ViewHolder>(DiffCallback()) {
+class CompradorAdapter(
+    private val onEditClick: (Comprador) -> Unit,
+    private val onDeleteClick: (Comprador) -> Unit
+) : ListAdapter<Comprador, CompradorAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemCompradorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding, onDeleteClick)
+        return ViewHolder(binding, onEditClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -21,6 +24,7 @@ class CompradorAdapter(private val onDeleteClick: (Comprador) -> Unit) : ListAda
 
     class ViewHolder(
         private val binding: ItemCompradorBinding,
+        private val onEditClick: (Comprador) -> Unit,
         private val onDeleteClick: (Comprador) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(comprador: Comprador) {
@@ -31,6 +35,10 @@ class CompradorAdapter(private val onDeleteClick: (Comprador) -> Unit) : ListAda
 
             binding.btnBorrarComprador.setOnClickListener {
                 onDeleteClick(comprador)
+            }
+            
+            binding.root.setOnClickListener {
+                onEditClick(comprador)
             }
         }
     }

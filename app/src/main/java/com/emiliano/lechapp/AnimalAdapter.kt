@@ -8,11 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.emiliano.lechapp.databinding.ItemAnimalBinding
 import java.util.Locale
 
-class AnimalAdapter(private val onDeleteClick: (AnimalLote) -> Unit) : ListAdapter<AnimalConProduccion, AnimalAdapter.ViewHolder>(DiffCallback()) {
+class AnimalAdapter(
+    private val onItemClick: (AnimalConProduccion) -> Unit,
+    private val onDeleteClick: (AnimalLote) -> Unit
+) : ListAdapter<AnimalConProduccion, AnimalAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemAnimalBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding, onDeleteClick)
+        return ViewHolder(binding, onItemClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -21,6 +24,7 @@ class AnimalAdapter(private val onDeleteClick: (AnimalLote) -> Unit) : ListAdapt
 
     class ViewHolder(
         private val binding: ItemAnimalBinding,
+        private val onItemClick: (AnimalConProduccion) -> Unit,
         private val onDeleteClick: (AnimalLote) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: AnimalConProduccion) {
@@ -36,6 +40,10 @@ class AnimalAdapter(private val onDeleteClick: (AnimalLote) -> Unit) : ListAdapt
 
             binding.btnBorrarAnimal.setOnClickListener {
                 onDeleteClick(animal)
+            }
+
+            binding.root.setOnClickListener {
+                onItemClick(item)
             }
         }
     }

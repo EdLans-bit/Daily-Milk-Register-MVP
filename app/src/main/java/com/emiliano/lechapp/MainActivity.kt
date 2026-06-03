@@ -4,9 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.KeyEvent
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.emiliano.lechapp.databinding.ActivityMainBinding
 import java.util.*
@@ -41,20 +45,58 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_registro -> replaceFragment(RegistroFragment())
-                R.id.nav_estadisticas -> replaceFragment(EstadisticasFragment())
-                R.id.nav_salud -> replaceFragment(SaludDashboardFragment())
-                R.id.nav_perfil -> replaceFragment(PerfilFragment())
-            }
-            true
-        }
+        setupNavigation()
 
         // Cargar fragmento inicial
         if (savedInstanceState == null) {
-            binding.bottomNavigation.selectedItemId = R.id.nav_registro
+            selectNavigationItem(binding.btnNavRegistro)
         }
+        
+        // El contenido hardcoded en activity_main.xml se oculta si usamos fragmentos
+        binding.secRegistro.visibility = View.GONE
+        binding.navHostFragment.visibility = View.VISIBLE
+    }
+
+    private fun setupNavigation() {
+        binding.btnNavRegistro.setOnClickListener { selectNavigationItem(it) }
+        binding.btnNavDashboard.setOnClickListener { selectNavigationItem(it) }
+        binding.btnNavEstadisticas.setOnClickListener { selectNavigationItem(it) }
+        binding.btnNavGanado.setOnClickListener { selectNavigationItem(it) }
+        
+        binding.configTopBtn.setOnClickListener {
+            replaceFragment(PerfilFragment())
+        }
+    }
+
+    private fun selectNavigationItem(view: View) {
+        // Reset all colors
+        resetNavItem(binding.btnNavRegistro)
+        resetNavItem(binding.btnNavDashboard)
+        resetNavItem(binding.btnNavEstadisticas)
+        resetNavItem(binding.btnNavGanado)
+
+        // Highlight selected
+        val icon = (view as android.widget.LinearLayout).getChildAt(0) as ImageView
+        val text = view.getChildAt(1) as TextView
+        icon.setColorFilter(ContextCompat.getColor(this, R.color.primary_green))
+        text.setTextColor(ContextCompat.getColor(this, R.color.primary_green))
+        text.setTypeface(null, android.graphics.Typeface.BOLD)
+
+        // Switch Fragment
+        when (view.id) {
+            R.id.btn_nav_registro -> replaceFragment(RegistroFragment())
+            R.id.btn_nav_dashboard -> replaceFragment(SaludDashboardFragment())
+            R.id.btn_nav_estadisticas -> replaceFragment(EstadisticasFragment())
+            R.id.btn_nav_ganado -> replaceFragment(GestionAnimalesFragment())
+        }
+    }
+
+    private fun resetNavItem(view: View) {
+        val icon = (view as android.widget.LinearLayout).getChildAt(0) as ImageView
+        val text = view.getChildAt(1) as TextView
+        icon.setColorFilter(ContextCompat.getColor(this, R.color.text_muted))
+        text.setTextColor(ContextCompat.getColor(this, R.color.text_muted))
+        text.setTypeface(null, android.graphics.Typeface.NORMAL)
     }
 
     private fun replaceFragment(fragment: Fragment) {

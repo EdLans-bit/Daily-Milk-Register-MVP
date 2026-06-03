@@ -31,9 +31,10 @@ class GestionAnimalesFragment : Fragment() {
         )
     }
 
-    private val adapter = AnimalAdapter { animal ->
-        mostrarConfirmacionBorrado(animal)
-    }
+    private val adapter = AnimalAdapter(
+        onItemClick = { item -> mostrarFichaSalud(item) },
+        onDeleteClick = { animal -> mostrarConfirmacionBorrado(animal) }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +60,42 @@ class GestionAnimalesFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun mostrarFichaSalud(item: AnimalConProduccion) {
+        val dialogBinding = com.emiliano.lechapp.databinding.DialogFichaSaludBinding.inflate(layoutInflater)
+        val animal = item.animal
+        
+        dialogBinding.tvFichaNombre.text = "Nombre: ${animal.identificador}"
+        dialogBinding.tvFichaRaza.text = "Raza: ${animal.raza ?: "Sin definir"}"
+        
+        // Mostrar promedio y total de la ficha
+        val infoCorta = String.format(java.util.Locale.getDefault(), 
+            "Total: %.1f L | Promedio: %.1f L (%d ordeños)", 
+            item.totalLitros, item.promedioLitros, item.conteoRegistros)
+        
+        // Simulación de estado basada en datos reales
+        viewModel.analizarSaludAnimal(animal.idAnimal) { resultado, registros ->
+            dialogBinding.tvFichaEstado.text = "Estado: $resultado"
+            if (resultado.contains("Alerta")) {
+                dialogBinding.tvFichaEstado.setTextColor(resources.getColor(R.color.alert_border_text, null))
+            } else {
+                dialogBinding.tvFichaEstado.setTextColor(resources.getColor(R.color.primary_green, null))
+            }
+            
+            dialogBinding.tvFichaHistorial.text = "$infoCorta\n\nResumen semanal: " + (if (registros.isNotEmpty()) {
+                "Últimos 7 días con ${registros.size} registros."
+            } else {
+                "Sin registros recientes."
+            })
+        }
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
+            
+        dialogBinding.btnCerrarFicha.setOnClickListener { dialog.dismiss() }
+        dialog.show()
     }
 
     private fun mostrarConfirmacionBorrado(animal: AnimalLote) {

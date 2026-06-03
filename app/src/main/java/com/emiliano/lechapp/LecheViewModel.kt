@@ -22,7 +22,6 @@ import kotlin.math.abs
 enum class FiltroTiempo { DIA, SEMANA, MES, TODO }
 
 class LecheViewModel(
-    
     private val dao: UsuarioDao,
     val relacionalesDao: RegistrosRelacionalesDao,
     private val geminiService: GeminiService
@@ -150,7 +149,7 @@ class LecheViewModel(
                     val anteriores = registros.drop(1)
                     val promedioAnterior = anteriores.map { it.litros }.average()
 
-                    val umbralAlerta = promedioAnterior * 0.85
+                    val umbralAlerta = promedioAnterior * (1 - sensibilidadAlertas.value / 100.0)
 
                     if (hoy < umbralAlerta) {
                         val porcentajeCaida = ((promedioAnterior - hoy) / promedioAnterior) * 100
@@ -195,7 +194,7 @@ class LecheViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val compradorExistente = relacionalesDao.findCompradorByName(compradorFinal)
             val (comprador, precioTransaccion) = if (compradorExistente != null) {
-                compradorExistente to compradorExistente.precioBase
+                compradorExistente to (if (precioTxt.isNotBlank()) precioUI else compradorExistente.precioBase)
             } else {
                 val nuevoC = Comprador(nombre = compradorFinal, precioBase = precioUI)
                 val id = relacionalesDao.insertComprador(nuevoC)
@@ -220,9 +219,7 @@ class LecheViewModel(
             dao.insertarRegistroLeche(nuevoRegistro)
 
             withContext(Dispatchers.Main) {
-                val msg = if (compradorExistente != null) 
-                    "¡Guardado! Precio usado: $$precioTransaccion (Pactado)" 
-                else "¡Guardado! Nuevo comprador creado."
+                val msg = "¡Guardado manual! $litros L para $compradorFinal"
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
         }
@@ -487,7 +484,27 @@ class LecheViewModel(
     private val _estadoPredictivo = MutableStateFlow<ResultadoPredictivo?>(null)
     val estadoPredictivo: StateFlow<ResultadoPredictivo?> = _estadoPredictivo
 
-    fun generarAnalisis(registros: List<RegistroLeche>?) {
+    private val _animalSeleccionadoId = MutableStateFlow<Int?>(null)
+
+    init {
+        // Actualizar análisis automáticamente cuando cambien los registros o el animal seleccionado
+        combine(registrosFiltrados, _animalSeleccionadoId) { registros, animalId ->
+            if (animalId != null && registros.isNotEmpty()) {
+                val registrosVaca = registros.filter { it.registro.animalId == animalId }
+                analizarProduccion(registrosVaca.map { it.registro.litros })
+            } else {
+                null
+            }
+        }.onEach { resultado ->
+            _estadoPredictivo.value = resultado
+        }.launchIn(viewModelScope)
+    }
+
+    fun generarAnalisis(animalId: Int) {
+        _animalSeleccionadoId.value = animalId
+    }
+
+    fun generarAnalisisGlobal(registros: List<RegistroLeche>?) {
         if (registros.isNullOrEmpty()) return
 
         val produccionActual = registros.last().litros
@@ -499,58 +516,22 @@ class LecheViewModel(
 
         val prediccionSimple = (produccionActual + promedioSemanal) / 2
 
-        if (_esUsuarioPremium.value) {
-            val insight = if (variacion < 0) {
-                "La producción actual está un ${String.format("%.1f", Math.abs(porcentajeCaida))}% por debajo de la entrega anterior. Promedio: ${String.format("%.1f", promedioSemanal)}L."
-            } else {
-                "Rendimiento superior al promedio semanal. Estabilidad detectada."
-            }
+        val insight = if (variacion < 0) "La producción está bajando"
+        else if (variacion > 0) "La producción está subiendo"
+        else "La producción está estable"
 
-            val alerta = if (variacion < 0 && produccionActual < promedioSemanal) {
-                AlertaGenerada(NivelAlerta.PRECAUCION, "Se espera una caída continua en los próximos días.")
-            } else null
+        val alerta = if (porcentajeCaida <= -sensibilidadAlertas.value) {
+            AlertaGenerada(NivelAlerta.CRITICO, "La producción bajó un ${String.format("%.1f", Math.abs(porcentajeCaida))}%")
+        } else null
 
-            _estadoPredictivo.value = ResultadoPredictivo(
-                prediccion = prediccionSimple,
-                insight = insight,
-                alerta = alerta,
-                litrosPredichos = prediccionSimple,
-                insightTexto = insight,
-                porcentajeCaida = abs(porcentajeCaida)
-            )
-        } else {
-            val insight = if (variacion < 0) "La producción está bajando"
-            else if (variacion > 0) "La producción está subiendo"
-            else "La producción está estable"
-
-            val alerta = if (porcentajeCaida <= -sensibilidadAlertas.value) {
-                AlertaGenerada(NivelAlerta.CRITICO, "La producción bajó un ${String.format("%.1f", Math.abs(porcentajeCaida))}%")
-            } else null
-
-            _estadoPredictivo.value = ResultadoPredictivo(
-                prediccion = prediccionSimple,
-                insight = insight,
-                alerta = alerta,
-                litrosPredichos = prediccionSimple,
-                insightTexto = insight,
-                porcentajeCaida = abs(porcentajeCaida)
-            )
-        }
-    }
-
-    fun generarAnalisis(animalId: Int) {
-        val registrosTotales = registrosFiltrados.value
-
-        if (registrosTotales.isEmpty()) {
-            _estadoPredictivo.value = null
-            return
-        }
-
-        val registrosVaca = registrosTotales.filter { it.registro.animalId == animalId }
-        val historialLitros = registrosVaca.map { it.registro.litros }
-
-        val resultado = analizarProduccion(historialLitros)
-        _estadoPredictivo.value = resultado
+        _estadoPredictivo.value = ResultadoPredictivo(
+            prediccion = prediccionSimple,
+            insight = insight,
+            alerta = alerta,
+            litrosPredichos = prediccionSimple,
+            insightTexto = insight,
+            porcentajeCaida = abs(porcentajeCaida)
+        )
     }
 
     private fun analizarProduccion(historial: List<Double>): ResultadoPredictivo {

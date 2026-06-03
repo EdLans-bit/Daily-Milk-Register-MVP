@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg_general">#F9FBF9</color>
+    <!-- Paleta de Colores Base de Lactario -->
+    <color name="bg_general">#F8F9FA</color>
     <color name="surface">#FFFFFF</color>
-    <color name="primary">#1E5631</color>
-    <color name="primary_light">#E8F5E9</color>
-    <color name="accent">#52B788</color>
-    <color name="text_main">#1C251F</color>
-    <color name="text_muted">#6C7A72</color>
-    <color name="border">#E2E8F0</color>
-    <color name="btn_danger_bg">#FEE2E2</color>
-    <color name="btn_danger_text">#991B1B</color>
+    <color name="primary_green">#1E5631</color>
+    <color name="btn_green">#144D29</color>
+    <color name="accent_purple">#6200EE</color>
+    <color name="magenta_btn">#FF00E5</color>
+    <color name="text_main">#1A1A1A</color>
+    <color name="text_muted">#707070</color>
+    <color name="border_color">#CCCCCC</color>
+    <color name="bg_badge">#EDF7ED</color>
+    <color name="premium_color">#6200EE</color>
 
-    <!-- Colores antiguos compatibles -->
-    <color name="accent_light">#E0F7FA</color>
+    <!-- Auxiliares para simulación y alertas -->
+    <color name="phone_border">#1F1F1F</color>
+    <color name="alert_bg">#FCE8E6</color>
+    <color name="alert_border_text">#EA4335</color>
+
+    <!-- Compatibilidad con nombres antiguos -->
+    <color name="primary">@color/primary_green</color>
+    <color name="primary_light">@color/bg_badge</color>
+    <color name="border">@color/border_color</color>
+    <color name="btn_danger_bg">@color/alert_bg</color>
+    <color name="btn_danger_text">@color/alert_border_text</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

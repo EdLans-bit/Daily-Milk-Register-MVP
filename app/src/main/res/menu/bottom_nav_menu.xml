@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_registro"
+        android:icon="@drawable/ic_placeholder"
+        android:title="Registro" />
+    <item
+        android:id="@+id/menu_dashboard"
+        android:icon="@drawable/ic_placeholder"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/menu_estadisticas"
+        android:icon="@drawable/ic_placeholder"
+        android:title="Estadísticas" />
+    <item
+        android:id="@+id/menu_ganado"
+        android:icon="@drawable/ic_placeholder"
+        android:title="Ganado" />
+    <item
+        android:id="@+id/menu_config"
+        android:icon="@drawable/ic_placeholder"
+        android:title="Config" />
+</menu>

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="@color/bg_general">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
                 android:text="Estadísticas"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#1B5E20"/>
+                android:textColor="@color/primary_green"/>
         </LinearLayout>
 
         <LinearLayout
@@ -41,7 +41,7 @@
             android:layout_height="48dp"
             android:orientation="horizontal"
             android:background="@drawable/bg_circle_green"
-            android:backgroundTint="#E8F5E9"
+            android:backgroundTint="@color/bg_badge"
             android:layout_marginBottom="20dp"
             android:padding="4dp">
 
@@ -53,7 +53,7 @@
                 android:text="DÍA"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:textColor="#1B5E20"
+                android:textColor="@color/primary_green"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"/>
@@ -66,7 +66,7 @@
                 android:text="SEM"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:textColor="#757575"
+                android:textColor="@color/text_muted"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"/>
@@ -79,7 +79,7 @@
                 android:text="MES"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:textColor="#757575"
+                android:textColor="@color/text_muted"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"/>
@@ -92,7 +92,7 @@
                 android:text="AÑO"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:textColor="#757575"
+                android:textColor="@color/text_muted"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"/>
@@ -105,7 +105,7 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
             app:strokeWidth="0dp"
-            app:cardBackgroundColor="#FFFFFF">
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:id="@+id/chartContainer"
@@ -133,8 +133,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#E0E0E0"
-                app:cardBackgroundColor="#FFFFFF">
+                app:strokeColor="@color/border_color"
+                app:cardBackgroundColor="@color/surface">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -147,7 +147,7 @@
                         android:layout_height="wrap_content"
                         android:text="Predicción Futura"
                         android:textSize="14sp"
-                        android:textColor="#757575"
+                        android:textColor="@color/text_muted"
                         android:layout_marginBottom="4dp"/>
 
                     <TextView
@@ -157,7 +157,7 @@
                         tools:text="Próximo mes: 110L"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="#111111"
+                        android:textColor="@color/text_main"
                         android:layout_marginBottom="16dp"/>
 
                     <Button
@@ -166,8 +166,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="COMPARAR FECHAS EXACTAS"
-                        android:textColor="#1B5E20"
-                        app:strokeColor="#1B5E20"
+                        android:textColor="@color/primary_green"
+                        app:strokeColor="@color/primary_green"
                         app:cornerRadius="8dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -195,7 +195,7 @@
                     android:text="Inteligencia del Periodo"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#111111"
+                    android:textColor="@color/text_main"
                     android:layout_marginBottom="12dp"/>
 
                 <Button
@@ -213,10 +213,70 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Exportación de Datos"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_main"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Botones de Exportación (PDF, EXCEL, COMPARTIR) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExportPdf"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="PDF"
+                android:textColor="@color/surface"
+                android:backgroundTint="@color/primary_green"
+                app:icon="@android:drawable/ic_menu_save"
+                app:iconTint="@color/surface"
+                android:layout_marginEnd="4dp"
+                app:cornerRadius="12dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExportExcel"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="EXCEL"
+                android:textColor="@color/surface"
+                android:backgroundTint="@color/primary_green"
+                app:icon="@android:drawable/ic_menu_agenda"
+                app:iconTint="@color/surface"
+                android:layout_marginHorizontal="4dp"
+                app:cornerRadius="12dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShare"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SHARE"
+                android:textColor="@color/surface"
+                android:backgroundTint="@color/accent_purple"
+                app:icon="@android:drawable/ic_menu_share"
+                app:iconTint="@color/surface"
+                android:layout_marginStart="4dp"
+                app:cornerRadius="12dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Últimas Entregas"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#111111"
+            android:textColor="@color/text_main"
             android:layout_marginBottom="12dp"/>
 
         <androidx.recyclerview.widget.RecyclerView

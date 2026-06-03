@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="@color/bg_general">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
             android:text="Dashboard de Salud"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="#1B5E20"
+            android:textColor="@color/primary_green"
             android:layout_marginBottom="24dp"/>
 
         <!-- SECCIÓN GRATIS: RANKING DE VACAS -->
@@ -30,7 +30,7 @@
             android:text="Selecciona Animal o Lote"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="#757575"
+            android:textColor="@color/text_muted"
             android:layout_marginBottom="12dp"/>
 
         <!-- Aquí se inyectan las tarjetas que acabas de crear -->
@@ -48,7 +48,7 @@
             android:text="Tendencia de Producción (7 días)"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#111111"
+            android:textColor="@color/text_main"
             android:layout_marginBottom="12dp"/>
 
         <!-- Contenedor dual (Contenido vs Candado) -->
@@ -64,7 +64,7 @@
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardBackgroundColor="@color/surface">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -79,7 +79,7 @@
                         tools:text="Vaca Seleccionada: Lola (#045)"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="#1B5E20"
+                        android:textColor="@color/primary_green"
                         android:layout_marginBottom="8dp"/>
 
                     <TextView
@@ -89,7 +89,7 @@
                         tools:text="Predicción mañana: 18.5L"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="#111111"
+                        android:textColor="@color/text_main"
                         android:layout_marginBottom="8dp"/>
 
                     <TextView
@@ -142,7 +142,7 @@
                     android:text="Inteligencia Individual Premium"
                     android:textStyle="bold"
                     android:textSize="18sp"
-                    android:textColor="#111111"
+                    android:textColor="@color/text_main"
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
@@ -167,5 +167,66 @@
                     app:cornerRadius="8dp"/>
             </LinearLayout>
         </FrameLayout>
+        <!-- SECCIÓN 3: ALERTAS DEL HATO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alertas del Hato"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_main"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="12dp"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAlertaHato"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/alert_border_text"
+            app:cardBackgroundColor="@color/surface"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@color/alert_bg">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alerta de Rendimiento Global"
+                    android:textColor="@color/alert_border_text"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvAlertaHatoTexto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="La producción global bajó significativamente ayer."
+                    android:textColor="@color/text_main"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tvSinAlertas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sin alertas críticas en el hato hoy."
+            android:textColor="@color/text_muted"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:padding="20dp"
+            android:background="@drawable/bg_rounded_card" />
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

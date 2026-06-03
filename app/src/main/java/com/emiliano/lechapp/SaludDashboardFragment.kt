@@ -19,17 +19,14 @@ class SaludDashboardFragment : Fragment() {
     private var _binding: FragmentSaludDashboardBinding? = null
     private val binding get() = _binding!!
 
-    // Mantenemos tu conexión exacta a Room y al servicio predictivo
     private val viewModel: LecheViewModel by activityViewModels {
         val database = AppDatabase.getDatabase(requireContext())
         LecheViewModel.Factory(
             database.usuarioDao(),
             database.registrosRelacionalesDao(),
-            GeminiService() // O el servicio que estés usando
+            GeminiService()
         )
     }
-
-    private var listaAnimales: List<AnimalLote> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,22 +42,60 @@ class SaludDashboardFragment : Fragment() {
         configurarRanking()
         configurarBloqueoPremium()
         observarMotorInteligente()
+        configurarAlertasHato()
+    }
+
+    private fun configurarAlertasHato() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.registrosFiltrados.collectLatest { registros ->
+                    if (registros.isEmpty()) {
+                        binding.cardAlertaHato.visibility = View.GONE
+                        binding.tvSinAlertas.visibility = View.VISIBLE
+                        return@collectLatest
+                    }
+
+                    // Calculamos una alerta de hato simple: comparamos hoy con ayer
+                    val hoy = System.currentTimeMillis()
+                    val ayer = hoy - (24 * 60 * 60 * 1000L)
+                    
+                    val prodHoy = registros.filter { isSameDay(it.registro.fecha, hoy) }.sumOf { it.registro.litros }
+                    val prodAyer = registros.filter { isSameDay(it.registro.fecha, ayer) }.sumOf { it.registro.litros }
+
+                    if (prodAyer > 0 && prodHoy < prodAyer * 0.85) {
+                        val caida = ((prodAyer - prodHoy) / prodAyer) * 100
+                        binding.tvAlertaHatoTexto.text = String.format(java.util.Locale.getDefault(), "La producción total bajó un %.1f%% respecto a ayer.", caida)
+                        binding.cardAlertaHato.visibility = View.VISIBLE
+                        binding.tvSinAlertas.visibility = View.GONE
+                    } else {
+                        binding.cardAlertaHato.visibility = View.GONE
+                        binding.tvSinAlertas.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun isSameDay(t1: Long, t2: Long): Boolean {
+        val c1 = java.util.Calendar.getInstance().apply { timeInMillis = t1 }
+        val c2 = java.util.Calendar.getInstance().apply { timeInMillis = t2 }
+        return c1.get(java.util.Calendar.YEAR) == c2.get(java.util.Calendar.YEAR) &&
+               c1.get(java.util.Calendar.DAY_OF_YEAR) == c2.get(java.util.Calendar.DAY_OF_YEAR)
     }
 
     private fun configurarRanking() {
         binding.rvRankingVacas.layoutManager = LinearLayoutManager(requireContext())
+        val adapter = RankingAdapter { vacaSeleccionada ->
+            binding.tvNombreVacaSeleccionada.text = "Vaca Seleccionada: ${vacaSeleccionada.identificador}"
+            viewModel.generarAnalisis(vacaSeleccionada.idAnimal)
+        }
+        binding.rvRankingVacas.adapter = adapter
 
-        // Cargamos la lista de animales desde Room
+        // Cargamos la lista de animales con su producción total desde Room
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.relacionalesDao.getAllAnimalesLotes().collectLatest { animales ->
-                    listaAnimales = animales
-
-                    // TODO: Aquí debes asignar tu adaptador (ej. RankingAdapter)
-                    // binding.rvRankingVacas.adapter = TuAdaptador(listaAnimales) { vacaSeleccionada ->
-                    //     binding.tvNombreVacaSeleccionada.text = "Vaca Seleccionada: ${vacaSeleccionada.identificador}"
-                    //     viewModel.generarAnalisis(vacaSeleccionada.idAnimal)
-                    // }
+                viewModel.relacionalesDao.obtenerAnimalesConProduccionTotal().collectLatest { animalesConProduccion ->
+                    adapter.submitList(animalesConProduccion)
                 }
             }
         }

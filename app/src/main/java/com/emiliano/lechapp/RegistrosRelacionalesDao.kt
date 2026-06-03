@@ -47,7 +47,15 @@ interface RegistrosRelacionalesDao {
     @Query("SELECT * FROM animales_lotes")
     fun getAllAnimalesLotes(): Flow<List<AnimalLote>>
 
-    @Query("SELECT a.*, COALESCE(SUM(r.litros), 0.0) as totalLitros FROM animales_lotes a LEFT JOIN registros_leche r ON a.idAnimal = r.animalId GROUP BY a.idAnimal")
+    @Query("""
+        SELECT a.*, 
+               COALESCE(SUM(r.litros), 0.0) as totalLitros,
+               COALESCE(AVG(r.litros), 0.0) as promedioLitros,
+               COUNT(r.id) as conteoRegistros
+        FROM animales_lotes a 
+        LEFT JOIN registros_leche r ON a.idAnimal = r.animalId 
+        GROUP BY a.idAnimal
+    """)
     fun obtenerAnimalesConProduccionTotal(): Flow<List<AnimalConProduccion>>
 
     @Query("SELECT * FROM animales_lotes WHERE identificador = :identificador LIMIT 1")

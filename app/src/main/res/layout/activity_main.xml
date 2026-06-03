@@ -2,23 +2,269 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_general">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:layout_width="0dp"
+    <!-- BARRA SUPERIOR FIJA -->
+    <RelativeLayout
+        android:id="@+id/top_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@color/surface"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:text="Lactario"
+            android:textColor="@color/primary_green"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/config_top_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_settings" />
+    </RelativeLayout>
+
+    <!-- CONTENIDO CON SCROLL INDEPENDIENTE (SECCIÓN REGISTRO POR DEFECTO) -->
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:padding="24dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/top_nav_bar">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+        <!-- En Android, el contenedor dinámico para inyectar fragmentos o vistas suele ser un LinearLayout -->
+        <LinearLayout
+            android:id="@+id/view_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Fragment Container para navegación (Opcional si usas fragmentos) -->
+            <FrameLayout
+                android:id="@+id/nav_host_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <!-- VISTA: NUEVO REGISTRO -->
+            <LinearLayout
+                android:id="@+id/sec_registro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nuevo Registro"
+                    android:textColor="@color/primary_green"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="22dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fecha de Ordeño / Venta"
+                    android:textColor="@color/text_main"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Caja de Fecha Desplegable -->
+                <RelativeLayout
+                    android:id="@+id/container_fecha"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:paddingHorizontal="18dp"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/tv_fecha_display"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="01 / 06 / 2026"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_calendar" />
+                </RelativeLayout>
+
+                <!-- Input Cantidad -->
+                <EditText
+                    android:id="@+id/et_cantidad_litros"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="Cantidad (Litros)"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="18dp"
+                    android:textColor="@color/text_main"
+                    android:textColorHint="@color/text_muted"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Selector (Spinner de Android) -->
+                <Spinner
+                    android:id="@+id/spinner_animal"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:paddingHorizontal="18dp"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- Botón Guardar -->
+                <Button
+                    android:id="@+id/btn_purple_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:backgroundTint="@color/accent_purple"
+                    android:text="GUARDAR REGISTRO MANUAL"
+                    android:textColor="@color/surface"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="24dp"
+                    app:cornerRadius="20dp" />
+
+                <!-- Card de Micrófono -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:layout_marginBottom="100dp">
+
+                    <ImageButton
+                        android:id="@+id/btn_microphone"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:backgroundTint="@color/primary_green"
+                        android:src="@drawable/ic_microphone"
+                        app:cornerRadius="40dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- NAVEGACIÓN INFERIOR FIJA -->
+    <LinearLayout
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:background="@color/surface"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/menu_bottom_nav" />
+        android:orientation="horizontal"
+        android:paddingBottom="12dp"
+        android:weightSum="4"
+        app:layout_constraintBottom_toBottomOf="parent">
 
+        <LinearLayout
+            android:id="@+id/btn_nav_registro"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_edit"
+                app:tint="@color/primary_green" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registro"
+                android:textColor="@color/primary_green"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_nav_dashboard"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_dashboard"
+                app:tint="@color/text_muted" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dashboard"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_nav_estadisticas"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_analytics"
+                app:tint="@color/text_muted" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Estadísticas"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_nav_ganado"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_cow"
+                app:tint="@color/text_muted" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ganado"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

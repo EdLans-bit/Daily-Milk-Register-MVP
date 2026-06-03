@@ -30,9 +30,10 @@ class GestionCompradoresFragment : Fragment() {
         )
     }
 
-    private val adapter = CompradorAdapter { comprador ->
-        mostrarConfirmacionBorrado(comprador)
-    }
+    private val adapter = CompradorAdapter(
+        onEditClick = { comprador -> mostrarDialogoNuevoComprador(comprador) },
+        onDeleteClick = { comprador -> mostrarConfirmacionBorrado(comprador) }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,10 +73,18 @@ class GestionCompradoresFragment : Fragment() {
             .show()
     }
 
-    private fun mostrarDialogoNuevoComprador() {
+    private fun mostrarDialogoNuevoComprador(compradorAEditar: Comprador? = null) {
         val dialogBinding = DialogAddCompradorBinding.inflate(layoutInflater)
+        
+        // Si estamos editando, pre-llenamos los campos
+        compradorAEditar?.let {
+            dialogBinding.etNombre.setText(it.nombre)
+            dialogBinding.etPrecioBase.setText(it.precioBase.toString())
+            dialogBinding.etTelefono.setText(it.telefono ?: "")
+        }
 
         AlertDialog.Builder(requireContext())
+            .setTitle(if (compradorAEditar == null) "Nuevo Comprador" else "Editar Comprador")
             .setView(dialogBinding.root)
             .setPositiveButton("Guardar") { _, _ ->
                 val nombre = dialogBinding.etNombre.text.toString()
@@ -83,7 +92,15 @@ class GestionCompradoresFragment : Fragment() {
                 val telefono = dialogBinding.etTelefono.text.toString().takeIf { it.isNotBlank() }
 
                 if (nombre.isNotBlank()) {
-                    guardarComprador(nombre, precio, telefono)
+                    if (compradorAEditar == null) {
+                        guardarComprador(nombre, precio, telefono)
+                    } else {
+                        actualizarComprador(compradorAEditar.copy(
+                            nombre = nombre,
+                            precioBase = precio,
+                            telefono = telefono
+                        ))
+                    }
                 } else {
                     Toast.makeText(requireContext(), "El nombre es obligatorio", Toast.LENGTH_SHORT).show()
                 }
@@ -100,7 +117,14 @@ class GestionCompradoresFragment : Fragment() {
                 telefono = telefono
             )
             viewModel.relacionalesDao.insertComprador(nuevoComprador)
-            Toast.makeText(requireContext(), "Comprador guardado correctamente", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Comprador guardado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun actualizarComprador(comprador: Comprador) {
+        lifecycleScope.launch {
+            viewModel.relacionalesDao.updateComprador(comprador)
+            Toast.makeText(requireContext(), "Comprador actualizado", Toast.LENGTH_SHORT).show()
         }
     }
 

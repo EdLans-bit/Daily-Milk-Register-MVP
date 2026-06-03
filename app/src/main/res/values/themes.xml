@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.LechApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorPrimaryVariant">@color/btn_green</item>
+        <item name="colorOnPrimary">@color/surface</item>
 
-    <style name="Theme.LechApp" parent="Theme.MaterialComponents.Light.NoActionBar" />
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/accent_purple</item>
+        <item name="colorOnSecondary">@color/surface</item>
 
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Window background -->
+        <item name="android:windowBackground">@color/bg_general</item>
+    </style>
 </resources>

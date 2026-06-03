@@ -4,36 +4,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
+import android.widget.TextView
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.geometry.CornerRadius
-import com.emiliano.lechapp.databinding.FragmentEstadisticasBinding
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.emiliano.lechapp.databinding.FragmentEstadisticasBinding
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-
+import java.util.Date
+import java.util.Locale
 
 class EstadisticasFragment : Fragment() {
 
@@ -41,12 +36,14 @@ class EstadisticasFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val lecheViewModel: LecheViewModel by activityViewModels {
+        val database = AppDatabase.getDatabase(requireContext())
         LecheViewModel.Factory(
-            AppDatabase.getDatabase(requireContext()).usuarioDao(),
-            AppDatabase.getDatabase(requireContext()).registrosRelacionalesDao(),
+            database.usuarioDao(),
+            database.registrosRelacionalesDao(),
             GeminiService()
         )
     }
+
     private val adapter = EntregaAdapter { registro ->
         lecheViewModel.borrarRegistro(registro)
     }
@@ -54,50 +51,107 @@ class EstadisticasFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_estadisticas, container, false)
+    ): View {
+        _binding = FragmentEstadisticasBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    // 2. Paste the new onViewCreated right below it
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Find all the elements by their exact XML IDs
-        val btnDia = view.findViewById<Button>(R.id.btn_dia)
-        val btnSem = view.findViewById<Button>(R.id.btn_sem)
-        val btnMes = view.findViewById<Button>(R.id.btn_mes)
-        val btnAnio = view.findViewById<Button>(R.id.btn_anio)
+        binding.rvUltimasEntregas.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+        binding.rvUltimasEntregas.adapter = adapter
 
-        val chartContainer = view.findViewById<LinearLayout>(R.id.chartContainer)
+        // Click listeners para los filtros
+        binding.btnDia.setOnClickListener { selectFilter(binding.btnDia, FiltroTiempo.DIA) }
+        binding.btnSem.setOnClickListener { selectFilter(binding.btnSem, FiltroTiempo.SEMANA) }
+        binding.btnMes.setOnClickListener { selectFilter(binding.btnMes, FiltroTiempo.MES) }
+        binding.btnAnio.setOnClickListener { selectFilter(binding.btnAnio, FiltroTiempo.TODO) }
 
-        val tvPrediccion = view.findViewById<TextView>(R.id.tvPrediccionPeriodo)
-        val btnComparacion = view.findViewById<Button>(R.id.btnFiltroPersonalizado)
-        val capaBloqueo = view.findViewById<LinearLayout>(R.id.capaBloqueoEstadisticas)
-        val btnDesbloquear = view.findViewById<Button>(R.id.btnDesbloquearEstadisticas)
-
-        val rvEntregas = view.findViewById<RecyclerView>(R.id.rvUltimasEntregas)
-
-        // Click listeners here
-        btnDia.setOnClickListener {
-            btnDia.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
-            btnSem.setTextColor(android.graphics.Color.parseColor("#757575"))
-            btnMes.setTextColor(android.graphics.Color.parseColor("#757575"))
-            btnAnio.setTextColor(android.graphics.Color.parseColor("#757575"))
-
-            // 2. Activar la lógica de tu ViewModel
-            lecheViewModel.cambiarFiltro(FiltroTiempo.DIA)
-
-        }
-        btnSem.setOnClickListener {
-            btnSem.setTextColor(android.graphics.Color.parseColor("#1B5E20"))
-            btnDia.setTextColor(android.graphics.Color.parseColor("#757575"))
-            btnMes.setTextColor(android.graphics.Color.parseColor("#757575"))
-            btnAnio.setTextColor(android.graphics.Color.parseColor("#757575"))
-
-            lecheViewModel.cambiarFiltro(FiltroTiempo.SEMANA)
+        binding.btnFiltroPersonalizado.setOnClickListener {
+            Toast.makeText(requireContext(), "Función de comparación próximamente", Toast.LENGTH_SHORT).show()
         }
 
-        capaBloqueo.visibility = View.VISIBLE
+        binding.btnDesbloquearEstadisticas.setOnClickListener {
+            binding.capaBloqueoEstadisticas.visibility = View.GONE
+        }
+
+        binding.btnExportPdf.setOnClickListener {
+            lifecycleScope.launch {
+                val uri = lecheViewModel.generarArchivoPDF(requireContext(), lecheViewModel.registrosFiltrados.value)
+                if (uri != null) compartirArchivo(uri)
+                else Toast.makeText(requireContext(), "Error al generar PDF", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnExportExcel.setOnClickListener {
+            lifecycleScope.launch {
+                val uri = lecheViewModel.generarArchivoCSV(requireContext(), lecheViewModel.registrosFiltrados.value)
+                if (uri != null) compartirArchivo(uri)
+                else Toast.makeText(requireContext(), "Error al generar Excel", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnShare.setOnClickListener {
+            lifecycleScope.launch {
+                val texto = lecheViewModel.generarTextoCompartir(lecheViewModel.registrosFiltrados.value)
+                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(android.content.Intent.EXTRA_TEXT, texto)
+                }
+                startActivity(android.content.Intent.createChooser(intent, "Compartir reporte"))
+            }
+        }
+
+        // Observar cambios en el ViewModel
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    lecheViewModel.registrosFiltrados.collectLatest { registros ->
+                        adapter.submitList(registros)
+                        actualizarGrafica(registros, lecheViewModel.filtroActual.value)
+                        
+                        // Actualizar predicción del periodo
+                        if (registros.isNotEmpty()) {
+                            val total = registros.sumOf { it.registro.litros }
+                            binding.tvPrediccionPeriodo.text = "Total Periodo: ${String.format("%.1f", total)}L"
+                        } else {
+                            binding.tvPrediccionPeriodo.text = "Sin datos en este periodo"
+                        }
+                    }
+                }
+                
+                launch {
+                    lecheViewModel.filtroActual.collectLatest { filtro ->
+                        // Actualizar UI de botones según el filtro
+                        updateFilterButtonsUI(filtro)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun selectFilter(textView: TextView, filtro: FiltroTiempo) {
+        lecheViewModel.cambiarFiltro(filtro)
+    }
+
+    private fun compartirArchivo(uri: android.net.Uri) {
+        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = "application/octet-stream"
+            putExtra(android.content.Intent.EXTRA_STREAM, uri)
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(android.content.Intent.createChooser(intent, "Compartir archivo"))
+    }
+
+    private fun updateFilterButtonsUI(activeFilter: FiltroTiempo) {
+        val activeColor = android.graphics.Color.parseColor("#1B5E20")
+        val inactiveColor = android.graphics.Color.parseColor("#757575")
+
+        binding.btnDia.setTextColor(if (activeFilter == FiltroTiempo.DIA) activeColor else inactiveColor)
+        binding.btnSem.setTextColor(if (activeFilter == FiltroTiempo.SEMANA) activeColor else inactiveColor)
+        binding.btnMes.setTextColor(if (activeFilter == FiltroTiempo.MES) activeColor else inactiveColor)
+        binding.btnAnio.setTextColor(if (activeFilter == FiltroTiempo.TODO) activeColor else inactiveColor)
     }
 
     private fun actualizarGrafica(registros: List<RegistroConDetalles>, filtro: FiltroTiempo) {
@@ -125,18 +179,16 @@ class EstadisticasFragment : Fragment() {
             val canvasWidth = size.width
             val canvasHeight = size.height
             
-            // Espacio para etiquetas inferiores y superiores
             val bottomPadding = 40.dp.toPx()
             val topPadding = 30.dp.toPx()
             val availableHeight = canvasHeight - bottomPadding - topPadding
             
             val barCount = items.size.coerceAtLeast(1)
-            val totalBarWidth = canvasWidth * 0.8f // Las barras ocupan el 80% del ancho
+            val totalBarWidth = canvasWidth * 0.8f
             val singleBarWidth = (totalBarWidth / barCount) * 0.6f
             val spacing = (totalBarWidth / barCount) * 0.4f
             val startOffset = (canvasWidth - totalBarWidth) / 2
 
-            // Dibujar líneas de fondo (guía)
             val lineCount = 4
             for (i in 0..lineCount) {
                 val y = topPadding + (availableHeight / lineCount) * i
@@ -153,15 +205,13 @@ class EstadisticasFragment : Fragment() {
                 val x = startOffset + index * (singleBarWidth + spacing) + spacing / 2
                 val y = canvasHeight - bottomPadding - barHeight
 
-                // Dibujar la barra con bordes redondeados arriba
                 drawRoundRect(
-                    color = Color(0xFF4CAF50), // Verde más claro como en la imagen
+                    color = Color(0xFF4CAF50),
                     topLeft = Offset(x, y),
                     size = Size(singleBarWidth, barHeight),
                     cornerRadius = CornerRadius(6.dp.toPx(), 6.dp.toPx())
                 )
 
-                // Dibujar valor arriba de la barra
                 drawContext.canvas.nativeCanvas.drawText(
                     "${pair.second.toInt()}L",
                     x + singleBarWidth / 2,
@@ -174,7 +224,6 @@ class EstadisticasFragment : Fragment() {
                     }
                 )
 
-                // Dibujar etiqueta abajo de la barra
                 drawContext.canvas.nativeCanvas.drawText(
                     pair.first,
                     x + singleBarWidth / 2,

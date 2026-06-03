@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.emiliano.lechapp.databinding.FragmentPerfilBinding
@@ -37,14 +38,26 @@ class PerfilFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val prefs = requireContext().getSharedPreferences("lechapp_prefs", Context.MODE_PRIVATE)
-        val precioActual = prefs.getString("precio_maestro", "0.0")
+        val precioActual = prefs.getString("precio_maestro", "1200")
         binding.etPrecioMaestro.setText(precioActual)
+        
+        val sensibilidadActual = prefs.getString("sensibilidad_alertas", "15")
+        binding.etSensibilidadAlertas.setText(sensibilidadActual)
 
-        binding.btnGuardarPrecio.setOnClickListener {
+        binding.btnGuardarConfiguracion.setOnClickListener {
             val nuevoPrecio = binding.etPrecioMaestro.text.toString()
-            if (nuevoPrecio.isNotBlank()) {
-                prefs.edit().putString("precio_maestro", nuevoPrecio).apply()
-                Toast.makeText(requireContext(), "Precio Maestro guardado: $nuevoPrecio", Toast.LENGTH_SHORT).show()
+            val nuevaSensibilidad = binding.etSensibilidadAlertas.text.toString()
+            
+            if (nuevoPrecio.isNotBlank() && nuevaSensibilidad.isNotBlank()) {
+                prefs.edit().apply {
+                    putString("precio_maestro", nuevoPrecio)
+                    putString("sensibilidad_alertas", nuevaSensibilidad)
+                    apply()
+                }
+                viewModel.actualizarPrecioPorDefecto(nuevoPrecio.toDoubleOrNull() ?: 2000.0)
+                viewModel.sensibilidadAlertas.value = nuevaSensibilidad.toDoubleOrNull() ?: 15.0
+                
+                Toast.makeText(requireContext(), "Configuración guardada", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -52,14 +65,14 @@ class PerfilFragment : Fragment() {
             mostrarDialogoBorrado()
         }
 
-        binding.cardGestionarAnimales.setOnClickListener {
+        binding.btnGestionarVacas.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.nav_host_fragment, GestionAnimalesFragment())
                 .addToBackStack(null)
                 .commit()
         }
 
-        binding.cardGestionarCompradores.setOnClickListener {
+        binding.btnGestionarCompradores.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.nav_host_fragment, GestionCompradoresFragment())
                 .addToBackStack(null)
@@ -78,7 +91,7 @@ class PerfilFragment : Fragment() {
             .setNegativeButton("CANCELAR", null)
             .show()
             .apply {
-                getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.btn_danger_text, null))
+                getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.alert_border_text))
             }
     }
 

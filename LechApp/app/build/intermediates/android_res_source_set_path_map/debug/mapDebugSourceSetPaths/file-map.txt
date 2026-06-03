@@ -1,0 +1,8 @@
+com.emiliano.lechapp-pngs-0 /home/emiliano/AndroidStudioProjects/LechApp/app/build/generated/res/pngs/debug
+com.emiliano.lechapp-updated_navigation_xml-1 /home/emiliano/AndroidStudioProjects/LechApp/app/build/generated/updated_navigation_xml/debug
+com.emiliano.lechapp-packageDebugResources-2 /home/emiliano/AndroidStudioProjects/LechApp/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.emiliano.lechapp-packageDebugResources-3 /home/emiliano/AndroidStudioProjects/LechApp/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.emiliano.lechapp-debug-4 /home/emiliano/AndroidStudioProjects/LechApp/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.emiliano.lechapp-debug-5 /home/emiliano/AndroidStudioProjects/LechApp/app/src/debug/res
+com.emiliano.lechapp-main-6 /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/res
+gradleHome-0 /home/emiliano/.gradle

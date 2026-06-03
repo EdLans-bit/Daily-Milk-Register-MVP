@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="@color/bg_general">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
                 android:text="Configuración de la Finca"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="#1B5E20"/>
+                android:textColor="@color/primary_green"/>
         </LinearLayout>
 
         <!-- SECCIÓN 1: ADMINISTRACIÓN DE ANIMALES -->
@@ -48,8 +48,8 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="1dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#E0E0E0"
-            app:cardBackgroundColor="#FFFFFF">
+            app:strokeColor="@color/border_color"
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -65,7 +65,7 @@
                     android:textSize="24sp"
                     android:gravity="center"
                     android:background="@drawable/bg_circle_green"
-                    android:backgroundTint="#E8F5E9"/>
+                    android:backgroundTint="@color/bg_badge"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -80,14 +80,14 @@
                         android:text="Gestionar Vacas y Lotes"
                         android:textStyle="bold"
                         android:textSize="16sp"
-                        android:textColor="#111111"/>
+                        android:textColor="@color/text_main"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Añadir, editar o eliminar animales"
                         android:textSize="14sp"
-                        android:textColor="#757575"/>
+                        android:textColor="@color/text_muted"/>
                 </LinearLayout>
 
                 <TextView
@@ -107,8 +107,8 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="1dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#E0E0E0"
-            app:cardBackgroundColor="#FFFFFF">
+            app:strokeColor="@color/border_color"
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -122,7 +122,7 @@
                     android:text="Parámetros de Inteligencia"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#1B5E20"
+                    android:textColor="@color/primary_green"
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:text="Define cuándo el sistema debe emitir una alerta de caída de producción."
                     android:textSize="14sp"
-                    android:textColor="#757575"
+                    android:textColor="@color/text_muted"
                     android:layout_marginBottom="16dp"/>
 
                 <!-- INPUT: SENSIBILIDAD DE ALERTA -->
@@ -139,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    app:boxStrokeColor="#1B5E20"
+                    app:boxStrokeColor="@color/primary_green"
                     android:hint="Sensibilidad de Alerta (%)">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -148,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal"
                         android:text="15"
-                        android:textColor="#111111"/>
+                        android:textColor="@color/text_main"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- INPUT: PRECIO MAESTRO -->
@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    app:boxStrokeColor="#1B5E20"
+                    app:boxStrokeColor="@color/primary_green"
                     android:hint="Precio base por Litro ($)">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -166,7 +166,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:text="1200"
-                        android:textColor="#111111"/>
+                        android:textColor="@color/text_main"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
@@ -176,9 +176,70 @@
                     android:text="GUARDAR PARÁMETROS"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"
-                    android:backgroundTint="#1B5E20"
+                    android:backgroundTint="@color/btn_green"
                     android:padding="12dp"
                     app:cornerRadius="8dp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- SECCIÓN 1.5: ADMINISTRACIÓN DE COMPRADORES -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnGestionarCompradores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_color"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="🤝"
+                    android:textSize="24sp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_circle_green"
+                    android:backgroundTint="@color/bg_badge"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gestionar Compradores"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_main"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Precios base y control de clientes"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_muted"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="▶"
+                    android:textColor="#BDBDBD"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -188,13 +249,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="BORRAR TODO EL HISTORIAL"
-            android:textColor="#C62828"
+            android:textColor="@color/alert_border_text"
             android:textStyle="bold"
-            android:backgroundTint="#FFEBEE"
+            android:backgroundTint="@color/alert_bg"
             android:padding="16dp"
             app:cornerRadius="12dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#FFCDD2"/>
+            app:strokeColor="@color/alert_border_text"/>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

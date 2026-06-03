@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/surface">
+
+    <TextView
+        android:id="@+id/tvFichaTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ficha de Salud"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_green"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/border_color"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvFichaNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre: Lola (#045)"
+                android:textStyle="bold"
+                android:textColor="@color/text_main"/>
+
+            <TextView
+                android:id="@+id/tvFichaRaza"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Raza: Holstein"
+                android:textColor="@color/text_muted"/>
+
+            <TextView
+                android:id="@+id/tvFichaEstado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Estado: Saludable"
+                android:textColor="@color/primary_green"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historial Reciente"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvFichaHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Últimos ordeños estables. No se detectan anomalías de mastitis o fatiga."
+        android:textColor="@color/text_muted"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnCerrarFicha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CERRAR"
+        app:cornerRadius="12dp"
+        android:backgroundTint="@color/primary_green"/>
+
+</LinearLayout>

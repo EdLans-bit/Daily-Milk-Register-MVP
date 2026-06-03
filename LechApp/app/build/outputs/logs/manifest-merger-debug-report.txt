@@ -1,0 +1,445 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:2:1-29:12
+INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:2:1-29:12
+INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:2:1-29:12
+INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:2:1-29:12
+MERGED from [androidx.compose.material3:material3-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/7248862ef6abeda9baa6f4c3f7c1243f/transformed/material3/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-ktx:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/269a5ed41464b3d4b6600a136163a428/transformed/activity-ktx-1.13.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.ai.client.generativeai:generativeai:0.9.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891f06f5142a02c06daa1102c74c27d5/transformed/generativeai-0.9.0/AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.ai.client.generativeai:common:0.8.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9214a9a1c4739cd7bddd99a69b8eb01a/transformed/common-0.8.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6ed6e77ea52b4616ddda1c8689579c14/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.compose.material:material-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/ab751a6726f0b7304b12c960b358a6b6/transformed/material/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e93c170cd53f743b70d6cd6b2b6dd0aa/transformed/material-ripple/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/96764f98971cbef7e3a99b3e186c2aea/transformed/foundation/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/ccc352fab4b16640a3ff3ba9cc5cdbae/transformed/animation/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/6aa542ece0ea0a978c49e55b5d03a9b8/transformed/foundation-layout/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/10972d34cabd215a2fddb58a0842584f/transformed/animation-core/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/4d77a9a4c446de189c093f3596ebce80/transformed/ui-tooling-data/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/143549483315ba99a7bf855607a3cf6e/transformed/ui-unit/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/b417c0c362313a03038578a1e7462666/transformed/ui-geometry/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/fdabfb1ea11401763fce5d1c01dd83ee/transformed/ui-util/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-text-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/0f3611bb402a394f768ac3a4773105f2/transformed/ui-text/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/a59087a4bb616a3b582b92e28c784264/transformed/ui-tooling-preview/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/70d553b763b7a57726b3eeef923e2e4c/transformed/ui-graphics/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.navigationevent:navigationevent-android:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/227e6a81130706d0c6b3a8b12eba0398/transformed/navigationevent/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigationevent:navigationevent-compose-android:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9b002847c96e38405a2eb2cda2025bd5/transformed/navigationevent-compose/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-annotation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/614524d851c4fb385392c962b594f3fc/transformed/runtime-annotation/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-retain-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/338c4bba2688edd60c93d4dab310f83e/transformed/runtime-retain/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8c6f8415a55ed49774ce15fb6ef9a89b/transformed/savedstate-ktx-1.4.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.savedstate:savedstate-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/ec247fda77e179badd6e8fcaedb847c8/transformed/savedstate/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate-compose-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891e2c2c81395de16e8642e9875160b4/transformed/savedstate-compose/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/994f7cb65485d9befe937e91cc123f27/transformed/runtime/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/b0aef1998f1962948e82d3e354205115/transformed/runtime-saveable/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.transition:transition:1.6.0] /home/emiliano/.gradle/caches/8.11.1/transforms/c058e022c97aa9e86e079fe83f022c21/transformed/transition-1.6.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/2411dc3d351899209f57b0dd5e8f74ab/transformed/dynamicanimation-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/717ef93038bc10c98bd222e1fdb419ea/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/3abffbcb6046ef67e89461896ae10923/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/12ae2a05cd8908f52ecc5c2dbf92621a/transformed/lifecycle-livedata-core-ktx-2.10.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/5c264d5df2633b7274a6e5be3288f98e/transformed/lifecycle-livedata-2.10.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/fb7f4b5c34fdc2e59c41475e1c003af0/transformed/lifecycle-livedata-core-2.10.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/598634d5731e96e2e11975910c2de9a6/transformed/lifecycle-viewmodel-2.10.0/AndroidManifest.xml:2:1-5:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/23c13bf951c4dc6d15f14b018ff673c9/transformed/lifecycle-viewmodel/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8ba25f8a3dc021071973f16cec05ab71/transformed/lifecycle-runtime-compose/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/d43583b9fbc932a86567603c8d7a9da3/transformed/lifecycle-viewmodel-savedstate/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core-ktx:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a787e9974347335be66f3bd119e0b36a/transformed/core-ktx-1.18.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.autofill:autofill:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/e2040d3c4546151abc98375875142669/transformed/autofill-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.window:window-core-android:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/79cb25d2ceb5295e38aefd26eadfd7d1/transformed/window-core/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:17:1-31:12
+MERGED from [androidx.graphics:graphics-path:1.0.1] /home/emiliano/.gradle/caches/8.11.1/transforms/4e4b8737ed554bb4de0492bba5a25d13/transformed/graphics-path-1.0.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/5a2a932987bedb274408bc9e1d2847c4/transformed/lifecycle-runtime/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/c7a1df5642a62f77dbee7d211a15d508/transformed/lifecycle-viewmodel-ktx-2.10.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f0b7c944959b6fa401d2d2216230acf3/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/fa5c97a619e4b55bf5cfc77536e859ab/transformed/lifecycle-viewmodel-compose/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.8] /home/emiliano/.gradle/caches/8.11.1/transforms/0278cec2403210c15423009331582020/transformed/material-icons-extended-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.8] /home/emiliano/.gradle/caches/8.11.1/transforms/e9592670ef991282490fe86a072fe365/transformed/material-icons-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c2c0c8ec7dda4f3b809c1c1e20d7bf66/transformed/ui/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:17:1-29:12
+MERGED from [androidx.activity:activity:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/1614ffec03f902fe382b34efda9ac532/transformed/activity-1.13.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-compose:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/748c650079b75e74c23c884d797dc281/transformed/activity-compose-1.13.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:17:1-31:12
+MERGED from [androidx.room:room-ktx:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/f9e8673f8830adcb69bc34191969b6ce/transformed/room-ktx-2.8.4/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.core:core-viewtree:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/af59a31e55f1172c6f6b0e9a4f7db806/transformed/core-viewtree-1.0.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f50ae795a81e75b3b09ec839ba9cdcf2/transformed/annotation-experimental-1.5.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/60d26d61bf82c415185c0fae0581194f/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.2.0] /home/emiliano/.gradle/caches/8.11.1/transforms/4af54010671f1c79ceaaa8408e0d0e2b/transformed/tracing-1.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/aab4d66903162080ee67e2fabf0eb207/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/410754e1d953d8f5b57435398158d084/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/emiliano/.gradle/caches/8.11.1/transforms/b0b4c017f7fdec6940c5270879d5f683/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite-framework-android:2.6.2] /home/emiliano/.gradle/caches/8.11.1/transforms/6329c5a65b1dd0d63d37ad6a3ac4cf41/transformed/sqlite-framework/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite-android:2.6.2] /home/emiliano/.gradle/caches/8.11.1/transforms/fd34d894924fa77925f60cbfe73e97b5/transformed/sqlite/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8d52860314f2507d158b2d99fd467b74/transformed/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/4b46843725891782c51fa316d97cda31/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/25bf250e14f75aa71ada1db4da305c29/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:4:5-67
+MERGED from [com.google.ai.client.generativeai:generativeai:0.9.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891f06f5142a02c06daa1102c74c27d5/transformed/generativeai-0.9.0/AndroidManifest.xml:22:5-67
+MERGED from [com.google.ai.client.generativeai:generativeai:0.9.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891f06f5142a02c06daa1102c74c27d5/transformed/generativeai-0.9.0/AndroidManifest.xml:22:5-67
+MERGED from [com.google.ai.client.generativeai:common:0.8.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9214a9a1c4739cd7bddd99a69b8eb01a/transformed/common-0.8.0/AndroidManifest.xml:22:5-67
+MERGED from [com.google.ai.client.generativeai:common:0.8.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9214a9a1c4739cd7bddd99a69b8eb01a/transformed/common-0.8.0/AndroidManifest.xml:22:5-67
+	android:name
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:4:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:5:5-79
+	android:name
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:5:22-76
+uses-permission#android.permission.RECORD_AUDIO
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:6:5-71
+	android:name
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:6:22-68
+application
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:7:5-27:19
+INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:7:5-27:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:22:5-29:19
+MERGED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:22:5-29:19
+MERGED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:22:5-27:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:22:5-27:19
+MERGED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/60d26d61bf82c415185c0fae0581194f/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/60d26d61bf82c415185c0fae0581194f/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/410754e1d953d8f5b57435398158d084/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/410754e1d953d8f5b57435398158d084/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:14:9-35
+	android:label
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:12:9-41
+	android:fullBackupContent
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:10:9-54
+	android:roundIcon
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:13:9-54
+	android:icon
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:11:9-43
+	android:allowBackup
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:8:9-35
+	android:theme
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:15:9-45
+	android:dataExtractionRules
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:9:9-65
+activity#com.emiliano.lechapp.MainActivity
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:16:9-26:20
+	android:label
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:19:13-45
+	android:exported
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:18:13-36
+	android:theme
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:20:13-49
+	android:name
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:17:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:21:13-25:29
+action#android.intent.action.MAIN
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:22:17-69
+	android:name
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:22:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:24:17-77
+	android:name
+		ADDED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml:24:27-74
+uses-sdk
+INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+MERGED from [androidx.compose.material3:material3-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/7248862ef6abeda9baa6f4c3f7c1243f/transformed/material3/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/7248862ef6abeda9baa6f4c3f7c1243f/transformed/material3/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-ktx:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/269a5ed41464b3d4b6600a136163a428/transformed/activity-ktx-1.13.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/269a5ed41464b3d4b6600a136163a428/transformed/activity-ktx-1.13.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.ai.client.generativeai:generativeai:0.9.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891f06f5142a02c06daa1102c74c27d5/transformed/generativeai-0.9.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.ai.client.generativeai:generativeai:0.9.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891f06f5142a02c06daa1102c74c27d5/transformed/generativeai-0.9.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.ai.client.generativeai:common:0.8.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9214a9a1c4739cd7bddd99a69b8eb01a/transformed/common-0.8.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.ai.client.generativeai:common:0.8.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9214a9a1c4739cd7bddd99a69b8eb01a/transformed/common-0.8.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6ed6e77ea52b4616ddda1c8689579c14/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6ed6e77ea52b4616ddda1c8689579c14/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.compose.material:material-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/ab751a6726f0b7304b12c960b358a6b6/transformed/material/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/ab751a6726f0b7304b12c960b358a6b6/transformed/material/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e93c170cd53f743b70d6cd6b2b6dd0aa/transformed/material-ripple/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e93c170cd53f743b70d6cd6b2b6dd0aa/transformed/material-ripple/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/96764f98971cbef7e3a99b3e186c2aea/transformed/foundation/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/96764f98971cbef7e3a99b3e186c2aea/transformed/foundation/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/ccc352fab4b16640a3ff3ba9cc5cdbae/transformed/animation/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/ccc352fab4b16640a3ff3ba9cc5cdbae/transformed/animation/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/6aa542ece0ea0a978c49e55b5d03a9b8/transformed/foundation-layout/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/6aa542ece0ea0a978c49e55b5d03a9b8/transformed/foundation-layout/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/10972d34cabd215a2fddb58a0842584f/transformed/animation-core/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/10972d34cabd215a2fddb58a0842584f/transformed/animation-core/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/4d77a9a4c446de189c093f3596ebce80/transformed/ui-tooling-data/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/4d77a9a4c446de189c093f3596ebce80/transformed/ui-tooling-data/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/143549483315ba99a7bf855607a3cf6e/transformed/ui-unit/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/143549483315ba99a7bf855607a3cf6e/transformed/ui-unit/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/b417c0c362313a03038578a1e7462666/transformed/ui-geometry/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/b417c0c362313a03038578a1e7462666/transformed/ui-geometry/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/fdabfb1ea11401763fce5d1c01dd83ee/transformed/ui-util/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/fdabfb1ea11401763fce5d1c01dd83ee/transformed/ui-util/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/0f3611bb402a394f768ac3a4773105f2/transformed/ui-text/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/0f3611bb402a394f768ac3a4773105f2/transformed/ui-text/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/a59087a4bb616a3b582b92e28c784264/transformed/ui-tooling-preview/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/a59087a4bb616a3b582b92e28c784264/transformed/ui-tooling-preview/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/70d553b763b7a57726b3eeef923e2e4c/transformed/ui-graphics/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/70d553b763b7a57726b3eeef923e2e4c/transformed/ui-graphics/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigationevent:navigationevent-android:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/227e6a81130706d0c6b3a8b12eba0398/transformed/navigationevent/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigationevent:navigationevent-android:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/227e6a81130706d0c6b3a8b12eba0398/transformed/navigationevent/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigationevent:navigationevent-compose-android:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9b002847c96e38405a2eb2cda2025bd5/transformed/navigationevent-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigationevent:navigationevent-compose-android:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/9b002847c96e38405a2eb2cda2025bd5/transformed/navigationevent-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-annotation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/614524d851c4fb385392c962b594f3fc/transformed/runtime-annotation/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-annotation-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/614524d851c4fb385392c962b594f3fc/transformed/runtime-annotation/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-retain-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/338c4bba2688edd60c93d4dab310f83e/transformed/runtime-retain/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-retain-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/338c4bba2688edd60c93d4dab310f83e/transformed/runtime-retain/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8c6f8415a55ed49774ce15fb6ef9a89b/transformed/savedstate-ktx-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8c6f8415a55ed49774ce15fb6ef9a89b/transformed/savedstate-ktx-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/ec247fda77e179badd6e8fcaedb847c8/transformed/savedstate/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/ec247fda77e179badd6e8fcaedb847c8/transformed/savedstate/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-compose-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891e2c2c81395de16e8642e9875160b4/transformed/savedstate-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-compose-android:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/891e2c2c81395de16e8642e9875160b4/transformed/savedstate-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/994f7cb65485d9befe937e91cc123f27/transformed/runtime/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/994f7cb65485d9befe937e91cc123f27/transformed/runtime/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/b0aef1998f1962948e82d3e354205115/transformed/runtime-saveable/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/b0aef1998f1962948e82d3e354205115/transformed/runtime-saveable/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.transition:transition:1.6.0] /home/emiliano/.gradle/caches/8.11.1/transforms/c058e022c97aa9e86e079fe83f022c21/transformed/transition-1.6.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.transition:transition:1.6.0] /home/emiliano/.gradle/caches/8.11.1/transforms/c058e022c97aa9e86e079fe83f022c21/transformed/transition-1.6.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/2411dc3d351899209f57b0dd5e8f74ab/transformed/dynamicanimation-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/2411dc3d351899209f57b0dd5e8f74ab/transformed/dynamicanimation-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/717ef93038bc10c98bd222e1fdb419ea/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/717ef93038bc10c98bd222e1fdb419ea/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/3abffbcb6046ef67e89461896ae10923/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/3abffbcb6046ef67e89461896ae10923/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/12ae2a05cd8908f52ecc5c2dbf92621a/transformed/lifecycle-livedata-core-ktx-2.10.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/12ae2a05cd8908f52ecc5c2dbf92621a/transformed/lifecycle-livedata-core-ktx-2.10.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/5c264d5df2633b7274a6e5be3288f98e/transformed/lifecycle-livedata-2.10.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/5c264d5df2633b7274a6e5be3288f98e/transformed/lifecycle-livedata-2.10.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/fb7f4b5c34fdc2e59c41475e1c003af0/transformed/lifecycle-livedata-core-2.10.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/fb7f4b5c34fdc2e59c41475e1c003af0/transformed/lifecycle-livedata-core-2.10.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/598634d5731e96e2e11975910c2de9a6/transformed/lifecycle-viewmodel-2.10.0/AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/598634d5731e96e2e11975910c2de9a6/transformed/lifecycle-viewmodel-2.10.0/AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/23c13bf951c4dc6d15f14b018ff673c9/transformed/lifecycle-viewmodel/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/23c13bf951c4dc6d15f14b018ff673c9/transformed/lifecycle-viewmodel/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8ba25f8a3dc021071973f16cec05ab71/transformed/lifecycle-runtime-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8ba25f8a3dc021071973f16cec05ab71/transformed/lifecycle-runtime-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/d43583b9fbc932a86567603c8d7a9da3/transformed/lifecycle-viewmodel-savedstate/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/d43583b9fbc932a86567603c8d7a9da3/transformed/lifecycle-viewmodel-savedstate/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-ktx:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a787e9974347335be66f3bd119e0b36a/transformed/core-ktx-1.18.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a787e9974347335be66f3bd119e0b36a/transformed/core-ktx-1.18.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/e2040d3c4546151abc98375875142669/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/e2040d3c4546151abc98375875142669/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.window:window-core-android:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/79cb25d2ceb5295e38aefd26eadfd7d1/transformed/window-core/AndroidManifest.xml:5:5-44
+MERGED from [androidx.window:window-core-android:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/79cb25d2ceb5295e38aefd26eadfd7d1/transformed/window-core/AndroidManifest.xml:5:5-44
+MERGED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.graphics:graphics-path:1.0.1] /home/emiliano/.gradle/caches/8.11.1/transforms/4e4b8737ed554bb4de0492bba5a25d13/transformed/graphics-path-1.0.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.graphics:graphics-path:1.0.1] /home/emiliano/.gradle/caches/8.11.1/transforms/4e4b8737ed554bb4de0492bba5a25d13/transformed/graphics-path-1.0.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/5a2a932987bedb274408bc9e1d2847c4/transformed/lifecycle-runtime/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/5a2a932987bedb274408bc9e1d2847c4/transformed/lifecycle-runtime/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/c7a1df5642a62f77dbee7d211a15d508/transformed/lifecycle-viewmodel-ktx-2.10.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/c7a1df5642a62f77dbee7d211a15d508/transformed/lifecycle-viewmodel-ktx-2.10.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f0b7c944959b6fa401d2d2216230acf3/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f0b7c944959b6fa401d2d2216230acf3/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/fa5c97a619e4b55bf5cfc77536e859ab/transformed/lifecycle-viewmodel-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/fa5c97a619e4b55bf5cfc77536e859ab/transformed/lifecycle-viewmodel-compose/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.8] /home/emiliano/.gradle/caches/8.11.1/transforms/0278cec2403210c15423009331582020/transformed/material-icons-extended-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.8] /home/emiliano/.gradle/caches/8.11.1/transforms/0278cec2403210c15423009331582020/transformed/material-icons-extended-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.8] /home/emiliano/.gradle/caches/8.11.1/transforms/e9592670ef991282490fe86a072fe365/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.8] /home/emiliano/.gradle/caches/8.11.1/transforms/e9592670ef991282490fe86a072fe365/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c2c0c8ec7dda4f3b809c1c1e20d7bf66/transformed/ui/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c2c0c8ec7dda4f3b809c1c1e20d7bf66/transformed/ui/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/1614ffec03f902fe382b34efda9ac532/transformed/activity-1.13.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/1614ffec03f902fe382b34efda9ac532/transformed/activity-1.13.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-compose:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/748c650079b75e74c23c884d797dc281/transformed/activity-compose-1.13.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.13.0] /home/emiliano/.gradle/caches/8.11.1/transforms/748c650079b75e74c23c884d797dc281/transformed/activity-compose-1.13.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-ktx:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/f9e8673f8830adcb69bc34191969b6ce/transformed/room-ktx-2.8.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.room:room-ktx:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/f9e8673f8830adcb69bc34191969b6ce/transformed/room-ktx-2.8.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.core:core-viewtree:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/af59a31e55f1172c6f6b0e9a4f7db806/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-viewtree:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/af59a31e55f1172c6f6b0e9a4f7db806/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f50ae795a81e75b3b09ec839ba9cdcf2/transformed/annotation-experimental-1.5.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f50ae795a81e75b3b09ec839ba9cdcf2/transformed/annotation-experimental-1.5.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/60d26d61bf82c415185c0fae0581194f/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/60d26d61bf82c415185c0fae0581194f/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.2.0] /home/emiliano/.gradle/caches/8.11.1/transforms/4af54010671f1c79ceaaa8408e0d0e2b/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.2.0] /home/emiliano/.gradle/caches/8.11.1/transforms/4af54010671f1c79ceaaa8408e0d0e2b/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/aab4d66903162080ee67e2fabf0eb207/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/aab4d66903162080ee67e2fabf0eb207/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/410754e1d953d8f5b57435398158d084/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/410754e1d953d8f5b57435398158d084/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/emiliano/.gradle/caches/8.11.1/transforms/b0b4c017f7fdec6940c5270879d5f683/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/emiliano/.gradle/caches/8.11.1/transforms/b0b4c017f7fdec6940c5270879d5f683/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework-android:2.6.2] /home/emiliano/.gradle/caches/8.11.1/transforms/6329c5a65b1dd0d63d37ad6a3ac4cf41/transformed/sqlite-framework/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework-android:2.6.2] /home/emiliano/.gradle/caches/8.11.1/transforms/6329c5a65b1dd0d63d37ad6a3ac4cf41/transformed/sqlite-framework/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-android:2.6.2] /home/emiliano/.gradle/caches/8.11.1/transforms/fd34d894924fa77925f60cbfe73e97b5/transformed/sqlite/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-android:2.6.2] /home/emiliano/.gradle/caches/8.11.1/transforms/fd34d894924fa77925f60cbfe73e97b5/transformed/sqlite/AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8d52860314f2507d158b2d99fd467b74/transformed/documentfile-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/8d52860314f2507d158b2d99fd467b74/transformed/documentfile-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/4b46843725891782c51fa316d97cda31/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/4b46843725891782c51fa316d97cda31/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/25bf250e14f75aa71ada1db4da305c29/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] /home/emiliano/.gradle/caches/8.11.1/transforms/25bf250e14f75aa71ada1db4da305c29/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/emiliano/AndroidStudioProjects/LechApp/app/src/main/AndroidManifest.xml
+activity#androidx.compose.ui.tooling.PreviewActivity
+ADDED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/c24b874bbe5e8d7b63f12364066657c9/transformed/ui-tooling/AndroidManifest.xml:24:13-71
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/60d26d61bf82c415185c0fae0581194f/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/emiliano/.gradle/caches/8.11.1/transforms/60d26d61bf82c415185c0fae0581194f/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/bdc8828d51bd19afa85bee21414f10cc/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.10.0] /home/emiliano/.gradle/caches/8.11.1/transforms/a8f3c7454ac9b0454e4d7d0e054233c9/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:30:17-78
+uses-library#androidx.window.extensions
+ADDED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:23:9-25:40
+	android:required
+		ADDED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:25:13-37
+	android:name
+		ADDED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:24:13-54
+uses-library#androidx.window.sidecar
+ADDED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:26:9-28:40
+	android:required
+		ADDED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:28:13-37
+	android:name
+		ADDED from [androidx.window:window:1.5.0] /home/emiliano/.gradle/caches/8.11.1/transforms/6a213396ebbbdf143482b0788615aa88/transformed/window-1.5.0/AndroidManifest.xml:27:13-51
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+permission#com.emiliano.lechapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+uses-permission#com.emiliano.lechapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /home/emiliano/.gradle/caches/8.11.1/transforms/22773a4ff4f0cec638cf699d2030bc6f/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+activity#androidx.activity.ComponentActivity
+ADDED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:23:9-26:79
+	android:exported
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:25:13-36
+	android:theme
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:26:13-76
+	android:name
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.10.4] /home/emiliano/.gradle/caches/8.11.1/transforms/e06924d2e9392ece414c221be244ce25/transformed/ui-test-manifest-1.10.4/AndroidManifest.xml:24:13-63
+service#androidx.room.MultiInstanceInvalidationService
+ADDED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:24:9-28:63
+	android:exported
+		ADDED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:27:13-37
+	tools:ignore
+		ADDED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:28:13-60
+	android:directBootAware
+		ADDED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:26:13-43
+	android:name
+		ADDED from [androidx.room:room-runtime-android:2.8.4] /home/emiliano/.gradle/caches/8.11.1/transforms/51b1a0e559ea671253a3c17ada1e61f3/transformed/room-runtime/AndroidManifest.xml:25:13-74
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/emiliano/.gradle/caches/8.11.1/transforms/f7f0e2733d900db2d36bc79919860a81/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92

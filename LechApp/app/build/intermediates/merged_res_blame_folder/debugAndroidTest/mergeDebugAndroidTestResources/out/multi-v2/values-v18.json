@@ -1,0 +1,28 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.emiliano.lechapp.test.app-mergeDebugAndroidTestResources-33:/values-v18/values-v18.xml",
+            "map": [
+                {
+                    "source": "/home/emiliano/.gradle/caches/8.11.1/transforms/282fc8816dfa592158bdcd8ef7f9d8db/transformed/core-1.7.0/res/values-v18/values.xml",
+                    "from": {
+                        "startLines": "4,12",
+                        "startColumns": "0,0",
+                        "startOffsets": "146,562",
+                        "endLines": "11,19",
+                        "endColumns": "8,8",
+                        "endOffsets": "561,975"
+                    },
+                    "to": {
+                        "startLines": "2,10",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,475",
+                        "endLines": "9,17",
+                        "endColumns": "8,8",
+                        "endOffsets": "470,888"
+                    }
+                }
+            ]
+        }
+    ]
+}
