@@ -7,9 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -27,6 +31,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.emiliano.lechapp.databinding.FragmentEstadisticasBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -69,11 +75,7 @@ class EstadisticasFragment : Fragment() {
         binding.btnAnio.setOnClickListener { selectFilter(binding.btnAnio, FiltroTiempo.TODO) }
 
         binding.btnFiltroPersonalizado.setOnClickListener {
-            Toast.makeText(requireContext(), "Función de comparación próximamente", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnDesbloquearEstadisticas.setOnClickListener {
-            binding.capaBloqueoEstadisticas.visibility = View.GONE
+            mostrarDialogoComparacion()
         }
 
         binding.btnExportPdf.setOnClickListener {
@@ -115,9 +117,9 @@ class EstadisticasFragment : Fragment() {
                         if (registros.isNotEmpty()) {
                             val totalLitros = registros.sumOf { it.registro.litros }
                             val totalDinero = registros.sumOf { it.registro.litros * it.registro.precioPorLitro }
-                            binding.tvPrediccionPeriodo.text = String.format(Locale.getDefault(), "Total: %.1f L | $ %.0f", totalLitros, totalDinero)
+                            binding.tvResumenPeriodo.text = String.format(Locale.getDefault(), "Total: %.1f L | $ %.0f", totalLitros, totalDinero)
                         } else {
-                            binding.tvPrediccionPeriodo.text = "Sin datos en este periodo"
+                            binding.tvResumenPeriodo.text = "Sin datos en este periodo"
                         }
                     }
                 }
@@ -126,6 +128,12 @@ class EstadisticasFragment : Fragment() {
                     lecheViewModel.filtroActual.collectLatest { filtro ->
                         // Actualizar UI de botones según el filtro
                         updateFilterButtonsUI(filtro)
+                    }
+                }
+
+                launch {
+                    lecheViewModel.esUsuarioPremium.collectLatest { esPremium ->
+                        binding.capaBloqueoEstadisticas.visibility = if (esPremium) View.GONE else View.VISIBLE
                     }
                 }
             }
@@ -145,6 +153,40 @@ class EstadisticasFragment : Fragment() {
         startActivity(android.content.Intent.createChooser(intent, "Compartir archivo"))
     }
 
+    private fun mostrarDialogoComparacion() {
+        val calendar = Calendar.getInstance()
+        
+        android.app.DatePickerDialog(
+            requireContext(),
+            { _, year1, month1, day1 ->
+                val cal1 = Calendar.getInstance()
+                cal1.set(year1, month1, day1)
+                
+                android.app.DatePickerDialog(
+                    requireContext(),
+                    { _, year2, month2, day2 ->
+                        val cal2 = Calendar.getInstance()
+                        cal2.set(year2, month2, day2)
+                        
+                        lecheViewModel.compararFechas(cal1.timeInMillis, cal2.timeInMillis)
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                ).apply {
+                    setTitle("Selecciona la segunda fecha")
+                    show()
+                }
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).apply {
+            setTitle("Selecciona la primera fecha")
+            show()
+        }
+    }
+
     private fun updateFilterButtonsUI(activeFilter: FiltroTiempo) {
         val activeColor = android.graphics.Color.parseColor("#1B5E20")
         val inactiveColor = android.graphics.Color.parseColor("#757575")
@@ -153,6 +195,13 @@ class EstadisticasFragment : Fragment() {
         binding.btnSem.setTextColor(if (activeFilter == FiltroTiempo.SEMANA) activeColor else inactiveColor)
         binding.btnMes.setTextColor(if (activeFilter == FiltroTiempo.MES) activeColor else inactiveColor)
         binding.btnAnio.setTextColor(if (activeFilter == FiltroTiempo.TODO) activeColor else inactiveColor)
+        
+        // Estilo para el botón de comparación
+        if (activeFilter == FiltroTiempo.COMPARAR) {
+            binding.btnFiltroPersonalizado.setBackgroundColor(android.graphics.Color.parseColor("#E8F5E9"))
+        } else {
+            binding.btnFiltroPersonalizado.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        }
     }
 
     private fun actualizarGrafica(registros: List<RegistroConDetalles>, filtro: FiltroTiempo) {
@@ -160,12 +209,34 @@ class EstadisticasFragment : Fragment() {
         
         val composeView = ComposeView(requireContext()).apply {
             setContent {
-                BarChart(datos)
+                if (filtro == FiltroTiempo.COMPARAR) {
+                    ComparativaView()
+                } else {
+                    BarChart(datos)
+                }
             }
         }
         
         binding.chartContainer.removeAllViews()
         binding.chartContainer.addView(composeView)
+    }
+
+    @Composable
+    fun ComparativaView() {
+        val datos by lecheViewModel.datosComparativa.collectAsState()
+        val fechas by lecheViewModel.fechasComparacion.collectAsState()
+        
+        if (datos != null && fechas != null) {
+            val sdf = SimpleDateFormat("dd/MM", Locale.getDefault())
+            val label1 = sdf.format(Date(fechas!!.first))
+            val label2 = sdf.format(Date(fechas!!.second))
+            
+            val mapa = mapOf(
+                label1 to datos!!.first,
+                label2 to datos!!.second
+            )
+            BarChart(mapa)
+        }
     }
 
     @Composable

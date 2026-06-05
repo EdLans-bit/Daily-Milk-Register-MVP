@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
 
-enum class FiltroTiempo { DIA, SEMANA, MES, TODO }
+enum class FiltroTiempo { DIA, SEMANA, MES, TODO, COMPARAR }
 
 class LecheViewModel(
     private val dao: UsuarioDao,
@@ -59,6 +59,12 @@ class LecheViewModel(
     private val _filtroActual = MutableStateFlow(FiltroTiempo.TODO)
     val filtroActual: StateFlow<FiltroTiempo> = _filtroActual.asStateFlow()
 
+    private val _fechasComparacion = MutableStateFlow<Pair<Long, Long>?>(null)
+    val fechasComparacion: StateFlow<Pair<Long, Long>?> = _fechasComparacion.asStateFlow()
+
+    private val _datosComparativa = MutableStateFlow<Pair<Double, Double>?>(null)
+    val datosComparativa: StateFlow<Pair<Double, Double>?> = _datosComparativa.asStateFlow()
+
     private val _mensajeConsulta = MutableStateFlow<String?>(null)
     val mensajeConsulta: StateFlow<String?> = _mensajeConsulta.asStateFlow()
 
@@ -86,10 +92,22 @@ class LecheViewModel(
     }.map { registros ->
         try {
             val filtro = _filtroActual.value
-            if (filtro == FiltroTiempo.TODO) registros
-            else {
-                val desde = calcularMilisegundosDesde(filtro)
-                registros.filter { it.registro.fecha >= desde }
+            when (filtro) {
+                FiltroTiempo.TODO -> registros
+                FiltroTiempo.COMPARAR -> {
+                    val comparacion = _fechasComparacion.value
+                    if (comparacion != null) {
+                        val inicio1 = resetTime(comparacion.first)
+                        val fin1 = inicio1 + 86399999
+                        val inicio2 = resetTime(comparacion.second)
+                        val fin2 = inicio2 + 86399999
+                        registros.filter { (it.registro.fecha in inicio1..fin1) || (it.registro.fecha in inicio2..fin2) }
+                    } else registros
+                }
+                else -> {
+                    val desde = calcularMilisegundosDesde(filtro)
+                    registros.filter { it.registro.fecha >= desde }
+                }
             }
         } catch (e: Exception) { emptyList() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -161,6 +179,33 @@ class LecheViewModel(
 
     fun seleccionarAnimalParaHistorial(id: Int?) {
         _animalHistorialId.value = id
+    }
+
+    fun compararFechas(fecha1: Long, fecha2: Long) {
+        _fechasComparacion.value = Pair(fecha1, fecha2)
+        _filtroActual.value = FiltroTiempo.COMPARAR
+        
+        viewModelScope.launch(Dispatchers.IO) {
+            val inicio1 = resetTime(fecha1)
+            val fin1 = inicio1 + 86399999
+            val inicio2 = resetTime(fecha2)
+            val fin2 = inicio2 + 86399999
+            
+            val litros1 = dao.obtenerLitrosEntreFechas(inicio1, fin1) ?: 0.0
+            val litros2 = dao.obtenerLitrosEntreFechas(inicio2, fin2) ?: 0.0
+            
+            _datosComparativa.value = Pair(litros1, litros2)
+        }
+    }
+
+    private fun resetTime(millis: Long): Long {
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = millis
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        return cal.timeInMillis
     }
 
     fun cambiarRangoFinanciero(filtro: FiltroTiempo) {
@@ -423,7 +468,7 @@ class LecheViewModel(
             FiltroTiempo.DIA -> c.add(Calendar.DAY_OF_YEAR, -1)
             FiltroTiempo.SEMANA -> c.add(Calendar.WEEK_OF_YEAR, -1)
             FiltroTiempo.MES -> c.add(Calendar.MONTH, -1)
-            FiltroTiempo.TODO -> return 0L
+            FiltroTiempo.TODO, FiltroTiempo.COMPARAR -> return 0L
         }
         return c.timeInMillis
     }
@@ -447,6 +492,10 @@ class LecheViewModel(
             }
             FiltroTiempo.TODO -> {
                 registrosOrdenados.groupBy { SimpleDateFormat("MMM", Locale.getDefault()).format(Date(it.registro.fecha)) }
+                    .mapValues { it.value.sumOf { r -> r.registro.litros } }
+            }
+            FiltroTiempo.COMPARAR -> {
+                registrosOrdenados.groupBy { SimpleDateFormat("dd/MM", Locale.getDefault()).format(Date(it.registro.fecha)) }
                     .mapValues { it.value.sumOf { r -> r.registro.litros } }
             }
         }
