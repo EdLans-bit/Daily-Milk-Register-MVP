@@ -13,7 +13,7 @@ import androidx.room.RoomDatabase
         AnimalLote::class,
         Gasto::class,
     ],
-    version = 5
+    version = 6
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao

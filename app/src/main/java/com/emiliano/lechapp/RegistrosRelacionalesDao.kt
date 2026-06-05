@@ -52,8 +52,8 @@ interface RegistrosRelacionalesDao {
         SELECT a.*,
                COALESCE(SUM(r.litros), 0.0) as totalLitros,
                COALESCE(AVG(r.litros), 0.0) as promedioLitros,
-               COUNT(r.id) as conteoRegistros,
-               COALESCE((SELECT SUM(r2.litros) FROM registros_leche r2 WHERE r2.animalId = a.idAnimal AND date(r2.fecha / 1000, 'unixepoch') = date('now')), 0.0) as litrosHoy
+               CAST(COUNT(r.id) AS INTEGER) as conteoRegistros,
+               COALESCE((SELECT SUM(r2.litros) FROM registros_leche r2 WHERE r2.animalId = a.idAnimal AND date(r2.fecha / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')), 0.0) as litrosHoy
         FROM animales_lotes a 
         LEFT JOIN registros_leche r ON a.idAnimal = r.animalId 
         GROUP BY a.idAnimal
@@ -122,7 +122,7 @@ interface RegistrosRelacionalesDao {
         WHERE fecha BETWEEN :inicioMs AND :finMs 
         AND (:animalIdEspecifico IS NULL OR animalId = :animalIdEspecifico)
         GROUP BY date(fecha / 1000, 'unixepoch', 'localtime')
-        ORDER BY fecha ASC
+        ORDER BY date(fecha / 1000, 'unixepoch', 'localtime') ASC
     """)
     suspend fun obtenerHistorialAgrupadoPorDia(
         inicioMs: Long,
@@ -131,7 +131,7 @@ interface RegistrosRelacionalesDao {
     ): List<Double>
 
     @Query("""
-        SELECT COUNT(DISTINCT date(fecha / 1000, 'unixepoch')) 
+        SELECT COUNT(DISTINCT date(fecha / 1000, 'unixepoch', 'localtime')) 
         FROM registros_leche 
         WHERE (:animalIdEspecifico IS NULL OR animalId = :animalIdEspecifico)
     """)
@@ -142,7 +142,7 @@ interface RegistrosRelacionalesDao {
         FROM animales_lotes a
         INNER JOIN registros_leche r ON a.idAnimal = r.animalId
         WHERE r.fecha BETWEEN :inicioMs AND :finMs
-        GROUP BY a.idAnimal
+        GROUP BY a.idAnimal, a.identificador
         ORDER BY totalProduccion DESC
     """)
     suspend fun obtenerRankingVacas(inicioMs: Long, finMs: Long): List<RankingVaca>
