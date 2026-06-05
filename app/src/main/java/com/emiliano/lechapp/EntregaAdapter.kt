@@ -27,9 +27,14 @@ class EntregaAdapter(private val onDeleteClick: (RegistroLeche) -> Unit) : ListA
         fun bind(item: RegistroConDetalles) {
             val registro = item.registro
             binding.tvComprador.text = item.comprador?.nombre ?: "Sin comprador"
+            binding.tvVaca.text = "Animal: ${item.animalLote?.identificador ?: "General"}"
             binding.tvLitros.text = "${registro.litros} Litros"
             
-            val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            val totalVenta = registro.litros * registro.precioPorLitro
+            binding.tvPrecioTotal.text = totalVenta.formatearDinero()
+            binding.tvPrecioUnitario.text = "(${registro.precioPorLitro.formatearDinero()} / L)"
+            
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             binding.tvFecha.text = sdf.format(Date(registro.fecha))
 
             binding.btnBorrarItem.setOnClickListener {

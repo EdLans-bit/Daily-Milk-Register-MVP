@@ -53,16 +53,30 @@ class SaludDashboardFragment : Fragment() {
     }
 
     private fun observarDatos() {
-        // 1. Predicción Global
+        // 1. Predicción Global (Ahora Total Litros de Hoy)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.prediccionGlobal.collectLatest { litros ->
-                    binding.tvAmountPrediccionGlobal.text = getString(R.string.litros_format, litros)
+                    binding.tvAmountPrediccionGlobal.text = "${litros.formatearMiles()} L"
                 }
             }
         }
 
-        // 2. Ranking Top 3
+        // 2. Alertas de Hato
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.alertaGlobal.collectLatest { alerta ->
+                    if (alerta != null) {
+                        binding.cardAlertaHato.visibility = View.VISIBLE
+                        binding.tvAlertaHatoTexto.text = alerta
+                    } else {
+                        binding.cardAlertaHato.visibility = View.GONE
+                    }
+                }
+            }
+        }
+
+        // 3. Ranking Top 3
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.relacionalesDao.obtenerAnimalesConProduccionTotal().collectLatest { animales ->

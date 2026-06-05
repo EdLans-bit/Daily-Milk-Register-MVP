@@ -12,35 +12,81 @@
         android:layout_width="match_parent" 
         android:layout_height="wrap_content" 
         android:padding="20dp">
-        <TextView 
-            android:id="@+id/tv_comprador" 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:text="Distribuidora Gabriel" 
-            android:textColor="@color/text_main" 
-            android:textStyle="bold" 
-            android:textSize="17sp"/>
-        <TextView 
-            android:id="@+id/tv_fecha"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:text="Hoy, 06:30 AM" 
-            android:layout_below="@id/tv_comprador" 
-            android:textColor="@color/text_muted" 
-            android:textSize="13sp" 
-            android:layout_marginTop="4dp"/>
-        <TextView 
-            android:id="@+id/tv_litros"
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
+
+        <LinearLayout
+            android:id="@+id/layout_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toStartOf="@id/layout_right"
+            android:layout_alignParentStart="true">
+
+            <TextView
+                android:id="@+id/tv_comprador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Distribuidora Gabriel"
+                android:textColor="@color/text_main"
+                android:textStyle="bold"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/tv_vaca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vaca: Lola (#045)"
+                android:textColor="@color/primary_green"
+                android:textSize="13sp"
+                android:layout_marginTop="2dp"/>
+
+            <TextView
+                android:id="@+id/tv_fecha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hoy, 06:30 AM"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end"
             android:layout_toStartOf="@id/btn_borrar_item"
-            android:layout_centerVertical="true" 
-            android:text="45 Litros" 
-            android:background="@drawable/badge_bg" 
-            android:textColor="@color/primary" 
-            android:textStyle="bold" 
-            android:padding="10dp"
-            android:layout_marginEnd="12dp"/>
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp">
+
+            <TextView
+                android:id="@+id/tv_litros"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="45 Litros"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/tv_precio_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$ 54,000"
+                android:textColor="@color/accent_purple"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginTop="2dp"/>
+
+            <TextView
+                android:id="@+id/tv_precio_unitario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="($ 1,200 / L)"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
+                android:layout_marginTop="1dp"/>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/btn_borrar_item"

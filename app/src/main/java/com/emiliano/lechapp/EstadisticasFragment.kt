@@ -117,7 +117,7 @@ class EstadisticasFragment : Fragment() {
                         if (registros.isNotEmpty()) {
                             val totalLitros = registros.sumOf { it.registro.litros }
                             val totalDinero = registros.sumOf { it.registro.litros * it.registro.precioPorLitro }
-                            binding.tvResumenPeriodo.text = String.format(Locale.getDefault(), "Total: %.1f L | $ %.0f", totalLitros, totalDinero)
+                            binding.tvResumenPeriodo.text = "Total: ${totalLitros.formatearMiles()} L | ${totalDinero.formatearDinero()}"
                         } else {
                             binding.tvResumenPeriodo.text = "Sin datos en este periodo"
                         }
@@ -285,7 +285,7 @@ class EstadisticasFragment : Fragment() {
                 )
 
                 drawContext.canvas.nativeCanvas.drawText(
-                    "${pair.second.toInt()}L",
+                    "${pair.second.formatearMiles()}L",
                     x + singleBarWidth / 2,
                     y - 8.dp.toPx(),
                     android.graphics.Paint().apply {

@@ -3,7 +3,7 @@
     <string name="dashboard_title">Dashboard</string>
     <string name="prediccion_produccion">Predicción de Producción</string>
     <string name="alertas_hato">Alertas del Hato</string>
-    <string name="mañana_ema">Mañana (Algoritmo EMA Gratis)</string>
+    <string name="mañana_ema">Mañana (Proyección de Ventas)</string>
     <string name="alerta_reactiva_basica">Alerta Reactiva Básica (Pasado)</string>
     <string name="litros_format">%.1f Litros</string>
     <string name="sin_registros">Sin registros</string>

@@ -129,9 +129,18 @@ class LecheViewModel(
 
     val prediccionGlobal: StateFlow<Double> = registrosFiltrados.map { registros ->
         if (registros.isEmpty()) return@map 0.0
-        val historial = registros.map { it.registro.litros }
-        if (historial.size < 3) 0.0
-        else try { analizarProduccion(historial).litrosPredichos } catch (e: Exception) { 0.0 }
+        val hoy = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        
+        // Sumamos el total de litros de hoy
+        val litrosHoy = registros.filter { it.registro.fecha >= hoy }
+            .sumOf { it.registro.litros }
+        
+        litrosHoy
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
     val alertaGlobal: StateFlow<String?> = registrosFiltrados.map { registros ->
@@ -212,7 +221,19 @@ class LecheViewModel(
         _rangoFinanciero.value = filtro
     }
 
-    fun actualizarPrecioPorDefecto(nuevoPrecio: Double) { _precioPorDefecto.value = nuevoPrecio }
+    fun actualizarPrecioPorDefecto(nuevoPrecio: Double) { 
+        _precioPorDefecto.value = nuevoPrecio 
+        viewModelScope.launch(Dispatchers.IO) {
+            val general = relacionalesDao.findCompradorByName("General")
+            if (general != null) {
+                if (general.precioBase != nuevoPrecio) {
+                    relacionalesDao.updateComprador(general.copy(precioBase = nuevoPrecio))
+                }
+            } else {
+                relacionalesDao.insertComprador(Comprador(nombre = "General", precioBase = nuevoPrecio))
+            }
+        }
+    }
     fun cambiarFiltro(nuevoFiltro: FiltroTiempo) { _filtroActual.value = nuevoFiltro }
     fun borrarRegistro(registro: RegistroLeche) { viewModelScope.launch(Dispatchers.IO) { dao.borrarRegistro(registro) } }
     fun borrarTodoElHistorial() { viewModelScope.launch(Dispatchers.IO) { dao.borrarTodoElHistorial() } }
@@ -298,12 +319,23 @@ class LecheViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             val compradorExistente = relacionalesDao.findCompradorByName(compradorFinal)
-            val (comprador, precioTransaccion) = if (compradorExistente != null) {
-                compradorExistente to (if (precioTxt.isNotBlank()) precioUI else compradorExistente.precioBase)
+            
+            // Si es General, forzamos el precio maestro (precioUI). 
+            // Si es un comprador específico con precio > 0, usamos su precio.
+            val precioTransaccion = if (compradorFinal != "General" && compradorExistente != null && compradorExistente.precioBase > 0) {
+                compradorExistente.precioBase
             } else {
-                val nuevoC = Comprador(nombre = compradorFinal, precioBase = precioUI)
-                val id = relacionalesDao.insertComprador(nuevoC)
-                nuevoC.copy(idComprador = id.toInt()) to precioUI
+                precioUI
+            }
+
+            val comprador = compradorExistente ?: Comprador(nombre = compradorFinal, precioBase = precioUI).let {
+                val id = relacionalesDao.insertComprador(it)
+                it.copy(idComprador = id.toInt())
+            }
+
+            // Sincronizar el precio del Comprador General en la base de datos si es necesario
+            if (compradorFinal == "General" && comprador.precioBase != precioUI) {
+                relacionalesDao.updateComprador(comprador.copy(precioBase = precioUI))
             }
 
             val animalLote = relacionalesDao.findAnimalLoteByName(animalFinal)
@@ -379,9 +411,15 @@ class LecheViewModel(
                                 it.copy(idAnimal = id.toInt())
                             }
 
+                        val precioFinal = if (nombreComprador != "General" && comprador.precioBase > 0) comprador.precioBase else precioIA
+                        
+                        if (nombreComprador == "General" && comprador.precioBase != precioIA) {
+                            relacionalesDao.updateComprador(comprador.copy(precioBase = precioIA))
+                        }
+
                         val nuevoRegistro = RegistroLeche(
                             litros = litros,
-                            precioPorLitro = precioIA,
+                            precioPorLitro = precioFinal,
                             fecha = fechaIA,
                             notaVoz = original,
                             compradorId = comprador.idComprador,
@@ -413,9 +451,15 @@ class LecheViewModel(
                             it.copy(idComprador = id.toInt())
                         }
 
+                    val precioFinal = if (resultado.nombreComprador != "General" && comprador.precioBase > 0) comprador.precioBase else resultado.precio
+
+                    if (resultado.nombreComprador == "General" && comprador.precioBase != resultado.precio) {
+                        relacionalesDao.updateComprador(comprador.copy(precioBase = resultado.precio))
+                    }
+
                     val nuevoRegistro = RegistroLeche(
                         litros = resultado.litros,
-                        precioPorLitro = resultado.precio,
+                        precioPorLitro = precioFinal,
                         compradorId = comprador.idComprador,
                         fecha = resultado.fecha,
                         notaVoz = resultado.notaVoz
