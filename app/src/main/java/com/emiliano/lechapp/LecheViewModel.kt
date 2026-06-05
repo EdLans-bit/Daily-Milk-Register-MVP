@@ -82,30 +82,90 @@ class LecheViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val registrosFiltrados: StateFlow<List<RegistroConDetalles>> = _filtroActual.flatMapLatest { filtro ->
-        dao.obtenerRegistrosConDetalles()
+        dao.obtenerRegistrosConDetalles().catch { emit(emptyList()) }
     }.map { registros ->
-        val filtro = _filtroActual.value
-        if (filtro == FiltroTiempo.TODO) registros
-        else {
-            val desde = calcularMilisegundosDesde(filtro)
-            registros.filter { it.registro.fecha >= desde }
-        }
+        try {
+            val filtro = _filtroActual.value
+            if (filtro == FiltroTiempo.TODO) registros
+            else {
+                val desde = calcularMilisegundosDesde(filtro)
+                registros.filter { it.registro.fecha >= desde }
+            }
+        } catch (e: Exception) { emptyList() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val totalLitros: StateFlow<Double> = _filtroActual.flatMapLatest { filtro ->
         if (filtro == FiltroTiempo.TODO) dao.obtenerTotalLitros()
         else dao.obtenerTotalLitrosFiltrado(calcularMilisegundosDesde(filtro))
-    }.map { it ?: 0.0 }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+    }.map { it ?: 0.0 }.catch { emit(0.0) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val gananciaTotal: StateFlow<Double> = _filtroActual.flatMapLatest { filtro ->
         if (filtro == FiltroTiempo.TODO) dao.obtenerGananciaTotal()
         else dao.obtenerGananciaTotalFiltrada(calcularMilisegundosDesde(filtro))
-    }.map { it ?: 0.0 }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+    }.map { it ?: 0.0 }.catch { emit(0.0) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
     val perfilUsuario = flow { emit(dao.obtenerPerfil()) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val prediccionGlobal: StateFlow<Double> = registrosFiltrados.map { registros ->
+        if (registros.isEmpty()) return@map 0.0
+        val historial = registros.map { it.registro.litros }
+        if (historial.size < 3) 0.0
+        else try { analizarProduccion(historial).litrosPredichos } catch (e: Exception) { 0.0 }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    val alertaGlobal: StateFlow<String?> = registrosFiltrados.map { registros ->
+        if (registros.size < 3) return@map null
+        val historial = registros.map { it.registro.litros }
+        try {
+            val resultado = analizarProduccion(historial)
+            if (resultado.porcentajeCaida >= sensibilidadAlertas.value) {
+                String.format(Locale.getDefault(), "La producción global bajó un %.1f%% recientemente.", resultado.porcentajeCaida)
+            } else null
+        } catch (e: Exception) { null }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    // --- Módulo Financiero ---
+    private val _rangoFinanciero = MutableStateFlow(FiltroTiempo.SEMANA)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val balanceFinanciero: StateFlow<List<BalanceDiario>> = _rangoFinanciero.flatMapLatest { filtro ->
+        val inicio = calcularMilisegundosDesde(filtro)
+        val ingresosFlow = relacionalesDao.obtenerIngresosDiarios(inicio)
+        val gastosFlow = relacionalesDao.obtenerGastosDiarios(inicio)
+
+        ingresosFlow.combine(gastosFlow) { ingresos, gastos ->
+            val mapa = mutableMapOf<String, BalanceDiario>()
+            ingresos.forEach { mapa[it.dia] = it }
+            gastos.forEach { g ->
+                val actual = mapa[g.dia] ?: BalanceDiario(g.dia)
+                mapa[g.dia] = actual.copy(gastos = g.gastos)
+            }
+            mapa.values.sortedBy { it.dia }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // --- Historial por Animal ---
+    private val _animalHistorialId = MutableStateFlow<Int?>(null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val historialAnimalSeleccionado: StateFlow<List<Double>> = _animalHistorialId.flatMapLatest { id ->
+        if (id == null) flowOf(emptyList())
+        else flow {
+            val inicio = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L) // Último mes
+            emit(relacionalesDao.obtenerHistorialAgrupadoPorDia(inicio, System.currentTimeMillis(), id))
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun seleccionarAnimalParaHistorial(id: Int?) {
+        _animalHistorialId.value = id
+    }
+
+    fun cambiarRangoFinanciero(filtro: FiltroTiempo) {
+        _rangoFinanciero.value = filtro
+    }
 
     fun actualizarPrecioPorDefecto(nuevoPrecio: Double) { _precioPorDefecto.value = nuevoPrecio }
     fun cambiarFiltro(nuevoFiltro: FiltroTiempo) { _filtroActual.value = nuevoFiltro }
@@ -498,6 +558,20 @@ class LecheViewModel(
         }.onEach { resultado ->
             _estadoPredictivo.value = resultado
         }.launchIn(viewModelScope)
+
+        // Actualizar ranking de vacas automáticamente
+        viewModelScope.launch {
+            while(true) {
+                try {
+                    val inicioMs = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L) // Últimos 30 días
+                    val finMs = System.currentTimeMillis()
+                    _rankingVacas.value = relacionalesDao.obtenerRankingVacas(inicioMs, finMs)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                kotlinx.coroutines.delay(60000) // Actualizar cada minuto
+            }
+        }
     }
 
     fun generarAnalisis(animalId: Int) {
@@ -507,68 +581,96 @@ class LecheViewModel(
     fun generarAnalisisGlobal(registros: List<RegistroLeche>?) {
         if (registros.isNullOrEmpty()) return
 
-        val produccionActual = registros.last().litros
-        val produccionAnterior = if (registros.size > 1) registros[registros.size - 2].litros else produccionActual
+        // 1. Agrupar producción total por día para el análisis global
+        val produccionPorDia = registros
+            .groupBy { date(it.fecha / 1000, "unixepoch", "localtime") }
+            .mapValues { entry -> entry.value.sumOf { it.litros } }
+            .values.toList()
 
-        val variacion = produccionActual - produccionAnterior
-        val porcentajeCaida = if (produccionAnterior > 0) (variacion / produccionAnterior) * 100 else 0.0
-        val promedioSemanal = registros.takeLast(7).map { it.litros }.average()
+        if (produccionPorDia.size < 2) {
+            _estadoPredictivo.value = ResultadoPredictivo(
+                prediccion = produccionPorDia.lastOrNull() ?: 0.0,
+                insight = "Datos insuficientes para análisis",
+                alerta = null,
+                litrosPredichos = produccionPorDia.lastOrNull() ?: 0.0,
+                insightTexto = "Datos insuficientes",
+                porcentajeCaida = 0.0
+            )
+            return
+        }
 
-        val prediccionSimple = (produccionActual + promedioSemanal) / 2
+        // 2. Aplicar Suavizamiento Exponencial Simple (SES)
+        // Alpha recomendado entre 0.1 y 0.3 para estabilidad
+        val alpha = 0.3 
+        var forecast = produccionPorDia.first()
+        
+        for (i in 1 until produccionPorDia.size) {
+            forecast = alpha * produccionPorDia[i] + (1 - alpha) * forecast
+        }
 
-        val insight = if (variacion < 0) "La producción está bajando"
-        else if (variacion > 0) "La producción está subiendo"
-        else "La producción está estable"
+        val ultimaProduccion = produccionPorDia.last()
+        val variacion = if (ultimaProduccion > 0) ((forecast - ultimaProduccion) / ultimaProduccion) * 100 else 0.0
+        
+        val insight = when {
+            variacion > 5 -> "Se espera un aumento del ${String.format("%.1f", variacion)}%"
+            variacion < -5 -> "Se espera una disminución del ${String.format("%.1f", Math.abs(variacion))}%"
+            else -> "Tendencia estable"
+        }
 
-        val alerta = if (porcentajeCaida <= -sensibilidadAlertas.value) {
-            AlertaGenerada(NivelAlerta.CRITICO, "La producción bajó un ${String.format("%.1f", Math.abs(porcentajeCaida))}%")
+        val alerta = if (variacion <= -sensibilidadAlertas.value) {
+            AlertaGenerada(NivelAlerta.CRITICO, "Riesgo de caída significativa en la producción global")
         } else null
 
         _estadoPredictivo.value = ResultadoPredictivo(
-            prediccion = prediccionSimple,
+            prediccion = forecast,
             insight = insight,
             alerta = alerta,
-            litrosPredichos = prediccionSimple,
+            litrosPredichos = forecast,
             insightTexto = insight,
-            porcentajeCaida = abs(porcentajeCaida)
+            porcentajeCaida = Math.abs(variacion)
         )
     }
 
+    private fun date(time: Long, format: String, tz: String): String {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        return sdf.format(java.util.Date(time * 1000))
+    }
+
     private fun analizarProduccion(historial: List<Double>): ResultadoPredictivo {
-        if (historial.size < 3) {
-            return ResultadoPredictivo(0.0, "Datos insuficientes para análisis", null)
+        if (historial.size < 2) {
+            return ResultadoPredictivo(historial.lastOrNull() ?: 0.0, "Datos insuficientes", null)
         }
 
-        val produccionActual = historial.last()
-        val produccionAnterior = historial[historial.size - 2]
-
-        val variacion = if (produccionAnterior > 0) {
-            ((produccionActual - produccionAnterior) / produccionAnterior) * 100
-        } else 0.0
-
-        val periodo = minOf(7, historial.size)
-        val alfa = 2.0 / (periodo + 1)
-
-        var ema = historial.first()
+        // Suavizamiento Exponencial Simple (SES) para la vaca individual
+        val alpha = 0.4 // Mayor peso a datos recientes en animales individuales
+        var forecast = historial.first()
+        
         for (i in 1 until historial.size) {
-            ema = (historial[i] * alfa) + (ema * (1 - alfa))
+            forecast = alpha * historial[i] + (1 - alpha) * forecast
         }
+
+        val ultima = historial.last()
+        val variacion = if (ultima > 0) ((forecast - ultima) / ultima) * 100 else 0.0
 
         val alerta = when {
-            variacion <= -15.0 -> AlertaGenerada(NivelAlerta.CRITICO, "Caída crítica del ${String.format("%.1f", Math.abs(variacion))}% en producción.")
-            variacion <= -5.0 -> AlertaGenerada(NivelAlerta.PRECAUCION, "Descenso leve de producción detectado.")
+            variacion <= -15.0 -> AlertaGenerada(NivelAlerta.CRITICO, "Caída crítica del ${String.format("%.1f", Math.abs(variacion))}%")
+            variacion <= -5.0 -> AlertaGenerada(NivelAlerta.PRECAUCION, "Descenso leve detectado")
             else -> null
         }
 
-        val insightIndividual = if (variacion < 0) "Tendencia a la baja" else "Tendencia estable o al alza"
+        val insightIndividual = when {
+            variacion > 2 -> "Estable (+${String.format("%.0f", variacion)}%)"
+            variacion < -2 -> "Riesgo de baja (${String.format("%.0f", variacion)}%)"
+            else -> "Estable"
+        }
 
         return ResultadoPredictivo(
-            prediccion = ema,
+            prediccion = forecast,
             insight = insightIndividual,
             alerta = alerta,
-            litrosPredichos = ema,
+            litrosPredichos = forecast,
             insightTexto = insightIndividual,
-            porcentajeCaida = abs(variacion)
+            porcentajeCaida = Math.abs(variacion)
         )
     }
 }

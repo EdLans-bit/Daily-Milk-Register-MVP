@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Lactario</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="prediccion_produccion">Predicción de Producción</string>
+    <string name="alertas_hato">Alertas del Hato</string>
+    <string name="mañana_ema">Mañana (Algoritmo EMA Gratis)</string>
+    <string name="alerta_reactiva_basica">Alerta Reactiva Básica (Pasado)</string>
+    <string name="litros_format">%.1f Litros</string>
+    <string name="sin_registros">Sin registros</string>
+    <string name="insuficientes_datos">Insuficientes datos</string>
+    <string name="vaca_seleccionada_format">Vaca Seleccionada: %s</string>
+    <string name="historial_animal_format">Historial de %s (30 días)</string>
+    <string name="nuevo_registro">Nuevo Registro</string>
+    <string name="guardar_registro_manual">GUARDAR REGISTRO MANUAL</string>
+    <string name="dictar_voz">Dictar por voz</string>
+    <string name="configuracion">Configuración</string>
+    <string name="salud_hato">Salud de Hato</string>
+    <string name="prediccion_mañana">Predicción Producción Total (Mañana)</string>
+    <string name="ficha_salud_individual">Ficha de Salud Individual</string>
+    <string name="inventario_rendimiento">Inventario de Rendimiento (Hoy)</string>
+    <string name="lactario">Lactario</string>
+    <string name="precio_telefono_format">%1$s | %2$s</string>
 </resources>

@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class PerfilUsuario(
     @PrimaryKey val id: Int = 0,
     val nombreGanadero: String,
-    val cantidadAnimales: Int
+    val cantidadAnimales: Int,
 )

@@ -8,7 +8,8 @@ data class AnimalLote(
     @PrimaryKey(autoGenerate = true) val idAnimal: Int = 0,
     val identificador: String,
     val esLoteGeneral: Boolean = false,
-    val raza: String? = null
+    val raza: String? = null,
+    val fechaRegistro: Long = System.currentTimeMillis()
 ) {
     companion object {
         val RAZAS_COMUNES = listOf(

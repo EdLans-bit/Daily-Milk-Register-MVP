@@ -1,8 +1,32 @@
 package com.emiliano.lechapp
 
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
+import android.graphics.Typeface
 import kotlin.math.min
 
 object TextoUtils {
+    
+    fun formatearMarkdown(texto: String): SpannableStringBuilder {
+        val ssb = SpannableStringBuilder()
+        var i = 0
+        while (i < texto.length) {
+            if (texto.startsWith("**", i)) {
+                val fin = texto.indexOf("**", i + 2)
+                if (fin != -1) {
+                    val start = ssb.length
+                    ssb.append(texto.substring(i + 2, fin))
+                    ssb.setSpan(StyleSpan(Typeface.BOLD), start, ssb.length, 0)
+                    i = fin + 2
+                    continue
+                }
+            }
+            ssb.append(texto[i])
+            i++
+        }
+        return ssb
+    }
+
     /**
      * Calcula la distancia de Levenshtein entre dos cadenas para medir su similitud.
      * Retorna el número de ediciones (inserciones, borrados, sustituciones) necesarias.
@@ -31,7 +55,7 @@ object TextoUtils {
 
         for (ex in existentes) {
             val dist = calcularDistanciaLevenshtein(nombre.lowercase(), ex.lowercase())
-            if (dist < minContexto && dist <= umbral) {
+            if ((dist < minContexto) && (dist <= umbral)) {
                 minContexto = dist
                 mejorMatch = ex
             }

@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         LecheViewModel.Factory(
             database.usuarioDao(),
             database.registrosRelacionalesDao(),
-            GeminiService()
+            GeminiService(),
         )
     }
 
@@ -33,8 +34,7 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val data = result.data
             val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            val spokenText = results?.get(0)
-            if (spokenText != null) {
+            results?.get(0)?.let { spokenText ->
                 lecheViewModel.procesarEntradaVoz(this, spokenText)
             }
         }
@@ -47,13 +47,25 @@ class MainActivity : AppCompatActivity() {
 
         setupNavigation()
 
-        // Cargar fragmento inicial
+        // Cargar fragmento inicial con seguridad de renderizado
         if (savedInstanceState == null) {
-            selectNavigationItem(binding.btnNavRegistro)
+            binding.root.post {
+                if (!isFinishing && !isDestroyed) {
+                    selectNavigationItem(binding.btnNavRegistro)
+                }
+            }
         }
-        
-        // El contenido hardcoded en activity_main.xml se oculta si usamos fragmentos
-        binding.secRegistro.visibility = View.GONE
+
+        binding.btnSimularPremium.setOnClickListener {
+            lecheViewModel.activarModoDemoPremium()
+            Toast.makeText(this, "Funciones Premium Desbloqueadas", Toast.LENGTH_SHORT).show()
+            binding.btnSimularPremium.visibility = View.GONE
+        }
+
+        binding.configTopBtn.setOnClickListener {
+            replaceFragment(ConfiguracionFragment())
+        }
+
         binding.navHostFragment.visibility = View.VISIBLE
     }
 
@@ -69,6 +81,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun selectNavigationItem(view: View) {
+        if (view !is android.widget.LinearLayout) return
+        
         // Reset all colors
         resetNavItem(binding.btnNavRegistro)
         resetNavItem(binding.btnNavDashboard)
@@ -76,8 +90,8 @@ class MainActivity : AppCompatActivity() {
         resetNavItem(binding.btnNavGanado)
 
         // Highlight selected
-        val icon = (view as android.widget.LinearLayout).getChildAt(0) as ImageView
-        val text = view.getChildAt(1) as TextView
+        val icon = view.getChildAt(0) as? ImageView ?: return
+        val text = view.getChildAt(1) as? TextView ?: return
         icon.setColorFilter(ContextCompat.getColor(this, R.color.primary_green))
         text.setTextColor(ContextCompat.getColor(this, R.color.primary_green))
         text.setTypeface(null, android.graphics.Typeface.BOLD)
@@ -92,21 +106,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetNavItem(view: View) {
-        val icon = (view as android.widget.LinearLayout).getChildAt(0) as ImageView
-        val text = view.getChildAt(1) as TextView
+        if (view !is android.widget.LinearLayout) return
+        val icon = view.getChildAt(0) as? ImageView ?: return
+        val text = view.getChildAt(1) as? TextView ?: return
         icon.setColorFilter(ContextCompat.getColor(this, R.color.text_muted))
         text.setTextColor(ContextCompat.getColor(this, R.color.text_muted))
         text.setTypeface(null, android.graphics.Typeface.NORMAL)
     }
 
     private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.nav_host_fragment, fragment)
-            .commit()
+        if (isFinishing || isDestroyed) return
+        try {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, fragment)
+                .commitAllowingStateLoss()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
             lecheViewModel.activarMicrofonoDesdeHardware()
             return true
         }
@@ -121,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         }
         try {
             speechRecognizerLauncher.launch(intent)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Manejar error si no hay motor de búsqueda por voz
         }
     }

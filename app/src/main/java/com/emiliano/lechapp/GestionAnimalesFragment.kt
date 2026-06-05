@@ -14,8 +14,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.emiliano.lechapp.databinding.DialogAddAnimalBinding
 import com.emiliano.lechapp.databinding.FragmentGestionAnimalesBinding
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class GestionAnimalesFragment : Fragment() {
 
@@ -31,10 +35,9 @@ class GestionAnimalesFragment : Fragment() {
         )
     }
 
-    private val adapter = AnimalAdapter(
-        onItemClick = { item -> mostrarFichaSalud(item) },
-        onDeleteClick = { animal -> mostrarConfirmacionBorrado(animal) }
-    )
+    private val selectionAdapter = VacaSelectionAdapter { item ->
+        seleccionarAnimal(item)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,107 +50,132 @@ class GestionAnimalesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.rvAnimales.adapter = adapter
+        binding.rvSeleccionVaca.adapter = selectionAdapter
 
-        binding.fabAddAnimal.setOnClickListener {
-            mostrarDialogoNuevoAnimal()
+        binding.btnBloquearPrediccion.setOnClickListener {
+            binding.tvMensajePremium.visibility = View.VISIBLE
+            Toast.makeText(requireContext(), "Activa Premium para desbloquear", Toast.LENGTH_SHORT).show()
         }
 
+        setupChart()
+        observarDatos()
+    }
+
+    private fun setupChart() {
+        binding.chartTendenciaVaca.apply {
+            description.isEnabled = false
+            setTouchEnabled(true)
+            xAxis.isEnabled = false
+            axisRight.isEnabled = false
+            setDrawGridBackground(false)
+        }
+    }
+
+    private fun seleccionarAnimal(item: AnimalConProduccion) {
+        viewModel.generarAnalisis(item.animal.idAnimal)
+        viewModel.seleccionarAnimalParaHistorial(item.animal.idAnimal)
+        binding.tvNombreAnimalSeleccionado.text = "Vaca ${item.animal.identificador}"
+        mostrarDetalleAnimal(item)
+    }
+
+    private fun mostrarDetalleAnimal(item: AnimalConProduccion) {
+        val sb = StringBuilder()
+        sb.append("**Producción hoy:** ${String.format(Locale.getDefault(), "%.1f", item.litrosHoy)} Litros\n")
+        sb.append("**Promedio:** ${String.format(Locale.getDefault(), "%.1f", item.promedioLitros)} L/día\n")
+        sb.append("**Total histórico:** ${String.format(Locale.getDefault(), "%.1f", item.totalLitros)} L")
+        
+        binding.tvResumenProduccionIndividual.text = TextoUtils.formatearMarkdown(sb.toString())
+    }
+
+    private fun observarDatos() {
+        // 1. Lista de Animales y Selección
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.relacionalesDao.obtenerAnimalesConProduccionTotal().collectLatest { animales ->
-                    adapter.submitList(animales)
+                    // Actualizar Selección (arriba)
+                    selectionAdapter.submitList(animales)
+                    if (animales.isNotEmpty() && viewModel.historialAnimalSeleccionado.value.isEmpty()) {
+                        selectionAdapter.selectFirst()
+                    }
+                }
+            }
+        }
+
+        // 2. Historial Individual (Gráfica)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.historialAnimalSeleccionado.collectLatest { historial ->
+                    actualizarGrafica(historial)
+                }
+            }
+        }
+        
+        // 3. Predicciones (Basadas en el estado del ViewModel y Premium)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.relacionalesDao.obtenerAnimalesConProduccionTotal().collectLatest { animales ->
+                    actualizarPredicciones(animales)
+                }
+            }
+        }
+
+        // 4. Estado Premium
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.esUsuarioPremium.collectLatest { isPremium ->
+                    if (isPremium) {
+                        binding.btnBloquearPrediccion.visibility = View.GONE
+                        binding.tvMensajePremium.visibility = View.GONE
+                        binding.tvPrediccionVacas.alpha = 1.0f
+                    } else {
+                        binding.btnBloquearPrediccion.visibility = View.VISIBLE
+                        binding.tvPrediccionVacas.alpha = 0.3f
+                    }
                 }
             }
         }
     }
 
-    private fun mostrarFichaSalud(item: AnimalConProduccion) {
-        val dialogBinding = com.emiliano.lechapp.databinding.DialogFichaSaludBinding.inflate(layoutInflater)
-        val animal = item.animal
-        
-        dialogBinding.tvFichaNombre.text = "Nombre: ${animal.identificador}"
-        dialogBinding.tvFichaRaza.text = "Raza: ${animal.raza ?: "Sin definir"}"
-        
-        // Mostrar promedio y total de la ficha
-        val infoCorta = String.format(java.util.Locale.getDefault(), 
-            "Total: %.1f L | Promedio: %.1f L (%d ordeños)", 
-            item.totalLitros, item.promedioLitros, item.conteoRegistros)
-        
-        // Simulación de estado basada en datos reales
-        viewModel.analizarSaludAnimal(animal.idAnimal) { resultado, registros ->
-            dialogBinding.tvFichaEstado.text = "Estado: $resultado"
-            if (resultado.contains("Alerta")) {
-                dialogBinding.tvFichaEstado.setTextColor(resources.getColor(R.color.alert_border_text, null))
-            } else {
-                dialogBinding.tvFichaEstado.setTextColor(resources.getColor(R.color.primary_green, null))
-            }
+    private fun actualizarPredicciones(animales: List<AnimalConProduccion>) {
+        val sb = StringBuilder()
+        animales.take(3).forEach { animal ->
+            // Simulación de predicción simple para la UI
+            val esBaja = animal.animal.idAnimal % 2 == 0 // Solo para variar en el ejemplo
+            val porcentaje = if (esBaja) "-5%" else "+2%"
+            val estado = if (esBaja) "Riesgo de baja" else "Estable"
             
-            dialogBinding.tvFichaHistorial.text = "$infoCorta\n\nResumen semanal: " + (if (registros.isNotEmpty()) {
-                "Últimos 7 días con ${registros.size} registros."
-            } else {
-                "Sin registros recientes."
-            })
+            sb.append("• Vaca ${animal.animal.identificador}: $estado ($porcentaje)\n")
+        }
+        if (animales.isEmpty()) sb.append("No hay suficientes datos para predicciones.")
+        binding.tvPrediccionVacas.text = sb.toString().trim()
+    }
+
+    private fun actualizarGrafica(historial: List<Double>) {
+        if (historial.isEmpty()) {
+            binding.chartTendenciaVaca.visibility = View.GONE
+            binding.tvChartPlaceholder.visibility = View.VISIBLE
+            return
+        }
+        
+        binding.chartTendenciaVaca.visibility = View.VISIBLE
+        binding.tvChartPlaceholder.visibility = View.GONE
+        
+        val entries = historial.mapIndexed { index, litros ->
+            Entry(index.toFloat(), litros.toFloat())
         }
 
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogBinding.root)
-            .create()
-            
-        dialogBinding.btnCerrarFicha.setOnClickListener { dialog.dismiss() }
-        dialog.show()
-    }
-
-    private fun mostrarConfirmacionBorrado(animal: AnimalLote) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Eliminar Animal")
-            .setMessage("¿Estás seguro de que deseas eliminar a ${animal.identificador}? Se perderán sus vínculos con los registros de leche.")
-            .setPositiveButton("Eliminar") { _, _ ->
-                viewModel.borrarAnimal(animal)
-                Toast.makeText(requireContext(), "Animal eliminado", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
-
-    private fun mostrarDialogoNuevoAnimal() {
-        val dialogBinding = DialogAddAnimalBinding.inflate(layoutInflater)
-        
-        // Configurar Spinner con las razas
-        val razasAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_dropdown_item,
-            AnimalLote.RAZAS_COMUNES
-        )
-        dialogBinding.spinnerRaza.adapter = razasAdapter
-
-        AlertDialog.Builder(requireContext())
-            .setView(dialogBinding.root)
-            .setPositiveButton("Guardar") { _, _ ->
-                val nombre = dialogBinding.etIdentificador.text.toString()
-                val esLote = dialogBinding.swEsLote.isChecked
-                val raza = dialogBinding.spinnerRaza.selectedItem.toString()
-
-                if (nombre.isNotBlank()) {
-                    guardarAnimal(nombre, esLote, raza)
-                } else {
-                    Toast.makeText(requireContext(), "El nombre es obligatorio", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
-
-    private fun guardarAnimal(nombre: String, esLote: Boolean, raza: String) {
-        lifecycleScope.launch {
-            val nuevoAnimal = AnimalLote(
-                identificador = nombre,
-                esLoteGeneral = esLote,
-                raza = raza
-            )
-            viewModel.relacionalesDao.insertAnimalLote(nuevoAnimal)
-            Toast.makeText(requireContext(), "Animal guardado correctamente", Toast.LENGTH_SHORT).show()
+        val dataSet = LineDataSet(entries, "Producción").apply {
+            color = resources.getColor(R.color.primary_green, null)
+            setCircleColor(resources.getColor(R.color.primary_green, null))
+            lineWidth = 3f
+            setDrawFilled(true)
+            fillColor = resources.getColor(R.color.bg_badge, null)
+            setDrawValues(false)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
         }
+
+        binding.chartTendenciaVaca.data = LineData(dataSet)
+        binding.chartTendenciaVaca.invalidate()
     }
 
     override fun onDestroyView() {

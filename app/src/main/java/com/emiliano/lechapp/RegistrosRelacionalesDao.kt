@@ -11,7 +11,14 @@ import kotlinx.coroutines.flow.Flow
 data class RankingVaca(
     val idAnimal: Int,
     val identificador: String,
-    val totalProduccion: Double)
+    val totalProduccion: Double,
+)
+data class BalanceDiario(
+    val dia: String,
+    val ingresos: Double = 0.0,
+    val gastos: Double = 0.0
+)
+
 @Dao
 interface RegistrosRelacionalesDao {
 
@@ -21,9 +28,6 @@ interface RegistrosRelacionalesDao {
 
     @Update
     suspend fun updateComprador(comprador: Comprador)
-
-    @Delete
-    suspend fun deleteComprador(comprador: Comprador)
 
     @Query("SELECT * FROM compradores")
     fun getAllCompradores(): Flow<List<Comprador>>
@@ -41,17 +45,15 @@ interface RegistrosRelacionalesDao {
     @Update
     suspend fun updateAnimalLote(animalLote: AnimalLote)
 
-    @Delete
-    suspend fun deleteAnimalLote(animalLote: AnimalLote)
-
     @Query("SELECT * FROM animales_lotes")
     fun getAllAnimalesLotes(): Flow<List<AnimalLote>>
 
     @Query("""
-        SELECT a.*, 
+        SELECT a.*,
                COALESCE(SUM(r.litros), 0.0) as totalLitros,
                COALESCE(AVG(r.litros), 0.0) as promedioLitros,
-               COUNT(r.id) as conteoRegistros
+               COUNT(r.id) as conteoRegistros,
+               COALESCE((SELECT SUM(r2.litros) FROM registros_leche r2 WHERE r2.animalId = a.idAnimal AND date(r2.fecha / 1000, 'unixepoch') = date('now')), 0.0) as litrosHoy
         FROM animales_lotes a 
         LEFT JOIN registros_leche r ON a.idAnimal = r.animalId 
         GROUP BY a.idAnimal
@@ -86,14 +88,36 @@ interface RegistrosRelacionalesDao {
     @Query("SELECT COALESCE(SUM(monto), 0.0) FROM gastos WHERE fecha >= :fechaLimite")
     suspend fun calcularGastosTotales(fechaLimite: Long): Double
 
+    @Query("""
+        SELECT 
+            COALESCE(strftime('%Y-%m-%d', datetime(fecha / 1000, 'unixepoch', 'localtime')), '1970-01-01') as dia,
+            COALESCE(SUM(litros * precioPorLitro), 0.0) as ingresos,
+            0.0 as gastos
+        FROM registros_leche
+        WHERE fecha >= :inicioMs
+        GROUP BY dia
+        ORDER BY dia ASC
+    """)
+    fun obtenerIngresosDiarios(inicioMs: Long): Flow<List<BalanceDiario>>
+
+    @Query("""
+        SELECT 
+            COALESCE(strftime('%Y-%m-%d', datetime(fecha / 1000, 'unixepoch', 'localtime')), '1970-01-01') as dia,
+            0.0 as ingresos,
+            COALESCE(SUM(monto), 0.0) as gastos
+        FROM gastos
+        WHERE fecha >= :inicioMs
+        GROUP BY dia
+        ORDER BY dia ASC
+    """)
+    fun obtenerGastosDiarios(inicioMs: Long): Flow<List<BalanceDiario>>
+
     // ====================================================================
     // --- Inteligencia Predictiva y Alertas (Fase 1) ---
     // ====================================================================
 
-    // 1. Consulta Analítica: Agrupa litros por día.
-    // Si animalIdEspecifico es NULL, trae el lote global. Si tiene ID, trae esa vaca.
     @Query("""
-        SELECT SUM(litros) as totalLitros 
+        SELECT COALESCE(SUM(litros), 0.0) as totalLitros 
         FROM registros_leche 
         WHERE fecha BETWEEN :inicioMs AND :finMs 
         AND (:animalIdEspecifico IS NULL OR animalId = :animalIdEspecifico)
@@ -106,7 +130,6 @@ interface RegistrosRelacionalesDao {
         animalIdEspecifico: Int? = null
     ): List<Double>
 
-    // 2. Consulta de Validación: Cuenta los días reales con datos
     @Query("""
         SELECT COUNT(DISTINCT date(fecha / 1000, 'unixepoch')) 
         FROM registros_leche 
@@ -114,14 +137,13 @@ interface RegistrosRelacionalesDao {
     """)
     suspend fun contarDiasConRegistros(animalIdEspecifico: Int? = null): Int
 
-
     @Query("""
-    SELECT a.idAnimal, a.identificador, SUM(r.litros) as totalProduccion
-    FROM animales_lotes a
-    INNER JOIN registros_leche r ON a.idAnimal = r.animalId
-    WHERE r.fecha BETWEEN :inicioMs AND :finMs
-    GROUP BY a.idAnimal
-    ORDER BY totalProduccion DESC
-""")
+        SELECT a.idAnimal, a.identificador, COALESCE(SUM(r.litros), 0.0) as totalProduccion
+        FROM animales_lotes a
+        INNER JOIN registros_leche r ON a.idAnimal = r.animalId
+        WHERE r.fecha BETWEEN :inicioMs AND :finMs
+        GROUP BY a.idAnimal
+        ORDER BY totalProduccion DESC
+    """)
     suspend fun obtenerRankingVacas(inicioMs: Long, finMs: Long): List<RankingVaca>
 }

@@ -111,10 +111,11 @@ class EstadisticasFragment : Fragment() {
                         adapter.submitList(registros)
                         actualizarGrafica(registros, lecheViewModel.filtroActual.value)
                         
-                        // Actualizar predicción del periodo
+                        // Actualizar resumen del periodo (Litros y Dinero)
                         if (registros.isNotEmpty()) {
-                            val total = registros.sumOf { it.registro.litros }
-                            binding.tvPrediccionPeriodo.text = "Total Periodo: ${String.format("%.1f", total)}L"
+                            val totalLitros = registros.sumOf { it.registro.litros }
+                            val totalDinero = registros.sumOf { it.registro.litros * it.registro.precioPorLitro }
+                            binding.tvPrediccionPeriodo.text = String.format(Locale.getDefault(), "Total: %.1f L | $ %.0f", totalLitros, totalDinero)
                         } else {
                             binding.tvPrediccionPeriodo.text = "Sin datos en este periodo"
                         }

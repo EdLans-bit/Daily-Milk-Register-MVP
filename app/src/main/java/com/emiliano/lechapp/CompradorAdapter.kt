@@ -10,7 +10,7 @@ import java.util.Locale
 
 class CompradorAdapter(
     private val onEditClick: (Comprador) -> Unit,
-    private val onDeleteClick: (Comprador) -> Unit
+    private val onDeleteClick: (Comprador) -> Unit,
 ) : ListAdapter<Comprador, CompradorAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,7 +31,7 @@ class CompradorAdapter(
             binding.tvNombreComprador.text = comprador.nombre
             val precioFormateado = String.format(Locale.getDefault(), "$ %.2f", comprador.precioBase)
             val telefono = comprador.telefono ?: "Sin teléfono"
-            binding.tvPrecioYTelefono.text = "$precioFormateado | $telefono"
+            binding.tvPrecioYTelefono.text = binding.root.context.getString(R.string.precio_telefono_format, precioFormateado, telefono)
 
             binding.btnBorrarComprador.setOnClickListener {
                 onDeleteClick(comprador)

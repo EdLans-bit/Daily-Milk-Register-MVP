@@ -6,12 +6,19 @@ import com.google.ai.client.generativeai.GenerativeModel
 class GeminiService {
     private val apiKey = BuildConfig.GEMINI_API_KEY
 
-    private val model = GenerativeModel(
-        modelName = "gemini-flash-latest",
-        apiKey = apiKey
-    )
+    private val model by lazy {
+        if (apiKey.isBlank() || apiKey == "null") {
+            null
+        } else {
+            GenerativeModel(
+                modelName = "gemini-flash-latest",
+                apiKey = apiKey
+            )
+        }
+    }
 
     suspend fun procesarVozConIA(textoVoz: String): String? {
+        val currentModel = model ?: return null
         val fechaActual = java.time.LocalDate.now()
         val prompt = """
             Actúa como un extractor de datos para una aplicación de registro lechero.
@@ -42,13 +49,13 @@ class GeminiService {
         """.trimIndent()
 
         return try {
-            val response = model.generateContent(prompt)
+            val response = currentModel.generateContent(prompt)
             // Imprimimos en el Logcat lo que respondió Gemini antes de devolverlo
-            Log.d("LechApp_IA", "Respuesta cruda de Gemini: ${response.text}")
+            Log.d("Lactario_IA", "Respuesta cruda de Gemini: ${response.text}")
             response.text
         } catch (e: Exception) {
             // AQUÍ DESTAPAMOS EL ERROR:
-            Log.e("LechApp_IA", "¡Falló Gemini! Motivo: ${e.message}", e)
+            Log.e("Lactario_IA", "¡Falló Gemini! Motivo: ${e.message}", e)
             null
         }
     }

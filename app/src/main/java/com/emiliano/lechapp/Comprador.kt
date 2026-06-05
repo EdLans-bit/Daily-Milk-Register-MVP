@@ -8,5 +8,5 @@ data class Comprador(
     @PrimaryKey(autoGenerate = true) val idComprador: Int = 0,
     val nombre: String,
     val precioBase: Double,
-    val telefono: String? = null
+    val telefono: String? = null,
 )

@@ -12,13 +12,13 @@ import androidx.room.PrimaryKey
             entity = Comprador::class,
             parentColumns = ["idComprador"],
             childColumns = ["compradorId"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.SET_NULL,
         ),
         ForeignKey(
             entity = AnimalLote::class,
             parentColumns = ["idAnimal"],
             childColumns = ["animalId"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.SET_NULL,
         )
     ],
     indices = [
@@ -33,5 +33,5 @@ data class RegistroLeche(
     val fecha: Long = System.currentTimeMillis(),
     val notaVoz: String? = null,
     val compradorId: Int? = null,
-    val animalId: Int? = null
+    val animalId: Int? = null,
 )

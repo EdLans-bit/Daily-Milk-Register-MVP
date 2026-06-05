@@ -11,7 +11,7 @@ import androidx.room.RoomDatabase
         RegistroLeche::class,
         Comprador::class,
         AnimalLote::class,
-        Gasto::class
+        Gasto::class,
     ],
     version = 5
 )
@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "lechapp_db",
                 )
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration(true)
                 .build()
                 INSTANCE = instance
                 instance

@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_general">
+    android:background="@color/bg_general"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,210 +24,71 @@
             android:textColor="@color/primary_green"
             android:layout_marginBottom="24dp"/>
 
-        <!-- SECCIÓN GRATIS: RANKING DE VACAS -->
+        <!-- SECCIÓN: PREDICCIÓN GLOBAL -->
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Selecciona Animal o Lote"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_muted"
-            android:layout_marginBottom="12dp"/>
-
-        <!-- Aquí se inyectan las tarjetas que acabas de crear -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvRankingVacas"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:layout_marginBottom="32dp"
-            tools:listitem="@layout/item_vaca_ranking" />
-
-        <!-- SECCIÓN PREMIUM: INTELIGENCIA INDIVIDUAL -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tendencia de Producción (7 días)"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:text="@string/prediccion_produccion"
             android:textColor="@color/text_main"
-            android:layout_marginBottom="12dp"/>
-
-        <!-- Contenedor dual (Contenido vs Candado) -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <!-- 1. CONTENIDO DE LA VACA (Se difumina si es Gratis) -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/layoutAnalisisIndividual"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
-                app:cardBackgroundColor="@color/surface">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:id="@+id/tvNombreVacaSeleccionada"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="Vaca Seleccionada: Lola (#045)"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary_green"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvPrediccionIndividual"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:text="Predicción mañana: 18.5L"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_main"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvInsightIndividual"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:text="Rendimiento estable en los últimos 3 días."
-                        android:textSize="16sp"
-                        android:textColor="#555555"
-                        android:layout_marginBottom="16dp"/>
-
-                    <!-- LA ÚNICA ALERTA DEL SISTEMA -->
-                    <TextView
-                        android:id="@+id/tvAlertaIndividual"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_circle_green"
-                        android:backgroundTint="#FFEBEE"
-                        android:textColor="#C62828"
-                        android:padding="16dp"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        tools:visibility="visible"
-                        tools:text="Caída crítica del 15% detectada. Posible problema de salud."/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 2. CAPA DE BLOQUEO (Candado Premium) -->
-            <LinearLayout
-                android:id="@+id/capaBloqueoSalud"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#E6FAFAFA"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="24dp"
-                android:elevation="4dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@android:drawable/ic_secure"
-                    android:layout_marginBottom="12dp"
-                    app:tint="#757575"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Inteligencia Individual Premium"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:textColor="@color/text_main"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mejora tu plan para desbloquear alertas predictivas por vaca y tendencias exactas."
-                    android:textSize="14sp"
-                    android:textColor="#555555"
-                    android:textAlignment="center"
-                    android:layout_marginBottom="20dp"/>
-
-                <!-- Botón Naranja de tu diseño -->
-                <Button
-                    android:id="@+id/btnDesbloquearSalud"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="DESBLOQUEAR AHORA"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold"
-                    android:backgroundTint="#FF9800"
-                    android:padding="12dp"
-                    app:cornerRadius="8dp"/>
-            </LinearLayout>
-        </FrameLayout>
-        <!-- SECCIÓN 3: ALERTAS DEL HATO -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Alertas del Hato"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/text_main"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp" />
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardAlertaHato"
+            android:id="@+id/cardPrediccionGlobal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
+            android:layout_marginBottom="24dp"
             app:cardElevation="2dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/alert_border_text"
-            app:cardBackgroundColor="@color/surface"
-            android:visibility="gone"
-            tools:visibility="visible">
+            app:cardCornerRadius="16dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_card_border_left_green"
                 android:orientation="vertical"
-                android:padding="16dp"
-                android:background="@color/alert_bg">
+                android:padding="20dp"
+                android:paddingStart="24dp"
+                tools:ignore="RtlSymmetry">
 
                 <TextView
+                    android:id="@+id/tvLabelPrediccionGlobal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Alerta de Rendimiento Global"
-                    android:textColor="@color/alert_border_text"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:text="@string/mañana_ema"
+                    android:textColor="@color/text_muted"
+                    android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/tvAlertaHatoTexto"
+                    android:id="@+id/tvAmountPrediccionGlobal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="La producción global bajó significativamente ayer."
+                    tools:text="245 Litros"
                     android:textColor="@color/text_main"
-                    android:textSize="14sp"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- SECCIÓN: TOP 3 RANKING DE PRODUCCIÓN -->
         <TextView
-            android:id="@+id/tvSinAlertas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sin alertas críticas en el hato hoy."
-            android:textColor="@color/text_muted"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:padding="20dp"
-            android:background="@drawable/bg_rounded_card" />
+            android:text="Top 3 Producción (Total)"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_main"
+            android:layout_marginBottom="12dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTopRanking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="100dp"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/item_vaca_ranking_crud" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

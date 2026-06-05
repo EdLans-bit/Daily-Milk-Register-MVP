@@ -1,50 +1,56 @@
 package com.emiliano.lechapp
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.emiliano.lechapp.databinding.ItemAnimalBinding
+import com.emiliano.lechapp.databinding.ItemVacaRankingCrudBinding
 import java.util.Locale
 
 class AnimalAdapter(
     private val onItemClick: (AnimalConProduccion) -> Unit,
-    private val onDeleteClick: (AnimalLote) -> Unit
+    private val onEditClick: ((AnimalLote) -> Unit)? = null,
+    private val onDeleteClick: ((AnimalLote) -> Unit)? = null
 ) : ListAdapter<AnimalConProduccion, AnimalAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemAnimalBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding, onItemClick, onDeleteClick)
+        val binding = ItemVacaRankingCrudBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding, onItemClick, onEditClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), position + 1)
     }
 
     class ViewHolder(
-        private val binding: ItemAnimalBinding,
+        private val binding: ItemVacaRankingCrudBinding,
         private val onItemClick: (AnimalConProduccion) -> Unit,
-        private val onDeleteClick: (AnimalLote) -> Unit
+        private val onEditClick: ((AnimalLote) -> Unit)?,
+        private val onDeleteClick: ((AnimalLote) -> Unit)?
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: AnimalConProduccion) {
+        fun bind(item: AnimalConProduccion, rank: Int) {
             val animal = item.animal
-            binding.tvNombre.text = animal.identificador
-            binding.tvRazaLote.text = "${animal.raza ?: "Sin raza"} - ${if (animal.esLoteGeneral) "Lote" else "Individual"}"
-            binding.tvProduccionTotal.text = String.format(Locale.getDefault(), "Producción histórica: %.1f Litros", item.totalLitros)
+            binding.tvNombreVaca.text = String.format(Locale.getDefault(), "Vaca %s: %.1f L hoy / %.1f L total", 
+                animal.identificador, item.litrosHoy, item.totalLitros)
+            binding.tvRankingBadge.text = rank.toString()
             
-            // Ícono visual según si es lote o individual
-            binding.imgAnimalType.setImageResource(
-                if (animal.esLoteGeneral) android.R.drawable.ic_menu_agenda else android.R.drawable.ic_menu_gallery
-            )
-
-            binding.btnBorrarAnimal.setOnClickListener {
-                onDeleteClick(animal)
+            if (onEditClick != null) {
+                binding.btnEditarVaca.visibility = View.VISIBLE
+                binding.btnEditarVaca.setOnClickListener { onEditClick.invoke(animal) }
+            } else {
+                binding.btnEditarVaca.visibility = View.GONE
             }
 
-            binding.root.setOnClickListener {
-                onItemClick(item)
+            if (onDeleteClick != null) {
+                binding.btnEliminarVaca.visibility = View.VISIBLE
+                binding.btnEliminarVaca.setOnClickListener { onDeleteClick.invoke(animal) }
+            } else {
+                binding.btnEliminarVaca.visibility = View.GONE
             }
+
+            binding.root.setOnClickListener { onItemClick(item) }
         }
     }
 

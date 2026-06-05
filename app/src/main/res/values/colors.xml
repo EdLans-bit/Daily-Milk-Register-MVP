@@ -12,11 +12,14 @@
     <color name="border_color">#CCCCCC</color>
     <color name="bg_badge">#EDF7ED</color>
     <color name="premium_color">#6200EE</color>
+    <color name="primary_purple">#6A1B9A</color>
+    <color name="bg_badge_purple">#F3E5F5</color>
 
     <!-- Auxiliares para simulación y alertas -->
     <color name="phone_border">#1F1F1F</color>
     <color name="alert_bg">#FCE8E6</color>
     <color name="alert_border_text">#EA4335</color>
+    <color name="alert_red">#EA4335</color>
 
     <!-- Compatibilidad con nombres antiguos -->
     <color name="primary">@color/primary_green</color>
