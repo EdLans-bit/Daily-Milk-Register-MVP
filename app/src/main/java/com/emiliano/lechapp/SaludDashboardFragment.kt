@@ -53,7 +53,7 @@ class SaludDashboardFragment : Fragment() {
     }
 
     private fun observarDatos() {
-        // 1. Predicción Global (Ahora Total Litros de Hoy)
+        // Predicción Global (Ahora Total Litros de Hoy)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.prediccionGlobal.collectLatest { litros ->
@@ -62,7 +62,7 @@ class SaludDashboardFragment : Fragment() {
             }
         }
 
-        // 2. Alertas de Hato
+        // Alertas de Hato
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.alertaGlobal.collectLatest { alerta ->
@@ -76,7 +76,7 @@ class SaludDashboardFragment : Fragment() {
             }
         }
 
-        // 3. Ranking Top 3
+        // Ranking Top 3
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.relacionalesDao.obtenerAnimalesConProduccionTotal().collectLatest { animales ->

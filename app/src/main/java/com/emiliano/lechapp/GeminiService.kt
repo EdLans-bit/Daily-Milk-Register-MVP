@@ -1,6 +1,6 @@
 package com.emiliano.lechapp
 
-import android.util.Log // <-- Importante
+import android.util.Log
 import com.google.ai.client.generativeai.GenerativeModel
 
 class GeminiService {
@@ -54,7 +54,6 @@ class GeminiService {
             Log.d("Lactario_IA", "Respuesta cruda de Gemini: ${response.text}")
             response.text
         } catch (e: Exception) {
-            // AQUÍ DESTAPAMOS EL ERROR:
             Log.e("Lactario_IA", "¡Falló Gemini! Motivo: ${e.message}", e)
             null
         }

@@ -24,12 +24,12 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
     fun clasificarIntencion(texto: String): AccionVoz {
         val t = texto.lowercase().trim()
 
-        // 1. Detección de Consulta (Keywords)
+        // Detección de Consulta (Keywords)
         if (t.contains("cuánto") || t.contains("total") || t.contains("plata") || t.contains("gané")) {
             return procesarConsulta(t)
         }
 
-        // 2. Intento de Registro
+        // Intento de Registro
         return extraerRegistroMejorado(t) ?: AccionVoz.NoEntendido
     }
 
@@ -94,14 +94,14 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
             textoModificado = textoModificado.replace(key, value)
         }
 
-        // 1. Extraer Cantidad de Litros
+        // Extraer Cantidad de Litros
         val regexLitros = "(\\d+(?:[.,]\\d+)?)\\s*(?:litros|litro|l\\b)".toRegex()
         val matchLitros = regexLitros.find(textoModificado) ?: return null
         val litros = matchLitros.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 0.0
         
         if (litros <= 0.0) return null
 
-        // 2. Extracción de Animal/Lote
+        // Extracción de Animal/Lote
         var nombreAnimal = "General"
         var esLote = true
 
@@ -119,7 +119,7 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
             esLote = true
         }
 
-        // 3. Extracción de Comprador
+        // Extracción de Comprador
         var nombreComprador = "General"
         val regexComprador = "(?:para|al|a)\\s+([\\wáéíóúñ\\s]+?)(?:\\s+a\\s+\\d+|$)".toRegex()
         val matchComprador = regexComprador.find(textoModificado)
@@ -132,7 +132,7 @@ class ProcesadorVozLocal(private val precioPorDefecto: Double) {
             }
         }
 
-        // 4. Extracción de Precio
+        // Extracción de Precio
         val regexPrecio = "(?:a|precio)\\s+(\\d+)".toRegex()
         val matchPrecio = regexPrecio.find(textoModificado)
         val precio = matchPrecio?.groupValues?.getOrNull(1)?.toDoubleOrNull() ?: precioPorDefecto

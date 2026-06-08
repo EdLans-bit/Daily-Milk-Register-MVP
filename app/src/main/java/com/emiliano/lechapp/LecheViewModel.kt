@@ -154,7 +154,6 @@ class LecheViewModel(
         } catch (e: Exception) { null }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    // --- Módulo Financiero ---
     private val _rangoFinanciero = MutableStateFlow(FiltroTiempo.SEMANA)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -174,7 +173,6 @@ class LecheViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // --- Historial por Animal ---
     private val _animalHistorialId = MutableStateFlow<Int?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -640,7 +638,6 @@ class LecheViewModel(
     private val _animalSeleccionadoId = MutableStateFlow<Int?>(null)
 
     init {
-        // Actualizar análisis automáticamente cuando cambien los registros o el animal seleccionado
         combine(registrosFiltrados, _animalSeleccionadoId) { registros, animalId ->
             if (animalId != null && registros.isNotEmpty()) {
                 val registrosVaca = registros.filter { it.registro.animalId == animalId }
@@ -652,7 +649,6 @@ class LecheViewModel(
             _estadoPredictivo.value = resultado
         }.launchIn(viewModelScope)
 
-        // Actualizar ranking de vacas automáticamente
         viewModelScope.launch {
             while(true) {
                 try {
@@ -674,7 +670,7 @@ class LecheViewModel(
     fun generarAnalisisGlobal(registros: List<RegistroLeche>?) {
         if (registros.isNullOrEmpty()) return
 
-        // 1. Agrupar producción total por día para el análisis global
+        // Agrupar producción total por día para el análisis global
         val produccionPorDia = registros
             .groupBy { date(it.fecha / 1000, "unixepoch", "localtime") }
             .mapValues { entry -> entry.value.sumOf { it.litros } }
@@ -692,7 +688,7 @@ class LecheViewModel(
             return
         }
 
-        // 2. Aplicar Suavizamiento Exponencial Simple (SES)
+        // Aplicar Suavizamiento Exponencial Simple (SES)
         // Alpha recomendado entre 0.1 y 0.3 para estabilidad
         val alpha = 0.3 
         var forecast = produccionPorDia.first()
@@ -734,8 +730,7 @@ class LecheViewModel(
             return ResultadoPredictivo(historial.lastOrNull() ?: 0.0, "Datos insuficientes", null)
         }
 
-        // Suavizamiento Exponencial Simple (SES) para la vaca individual
-        val alpha = 0.4 // Mayor peso a datos recientes en animales individuales
+        val alpha = 0.4
         var forecast = historial.first()
         
         for (i in 1 until historial.size) {

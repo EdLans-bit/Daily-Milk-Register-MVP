@@ -68,7 +68,6 @@ class EstadisticasFragment : Fragment() {
         binding.rvUltimasEntregas.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
         binding.rvUltimasEntregas.adapter = adapter
 
-        // Click listeners para los filtros
         binding.btnDia.setOnClickListener { selectFilter(binding.btnDia, FiltroTiempo.DIA) }
         binding.btnSem.setOnClickListener { selectFilter(binding.btnSem, FiltroTiempo.SEMANA) }
         binding.btnMes.setOnClickListener { selectFilter(binding.btnMes, FiltroTiempo.MES) }
@@ -113,7 +112,6 @@ class EstadisticasFragment : Fragment() {
                         adapter.submitList(registros)
                         actualizarGrafica(registros, lecheViewModel.filtroActual.value)
                         
-                        // Actualizar resumen del periodo (Litros y Dinero)
                         if (registros.isNotEmpty()) {
                             val totalLitros = registros.sumOf { it.registro.litros }
                             val totalDinero = registros.sumOf { it.registro.litros * it.registro.precioPorLitro }
@@ -126,7 +124,6 @@ class EstadisticasFragment : Fragment() {
                 
                 launch {
                     lecheViewModel.filtroActual.collectLatest { filtro ->
-                        // Actualizar UI de botones según el filtro
                         updateFilterButtonsUI(filtro)
                     }
                 }

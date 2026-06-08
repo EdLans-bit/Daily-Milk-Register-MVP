@@ -5,14 +5,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDao {
-    // --- Lógica de Usuario ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun guardarPerfil(perfil: PerfilUsuario)
 
     @Query("SELECT * FROM perfil_usuario WHERE id = 0")
     suspend fun obtenerPerfil(): PerfilUsuario?
 
-    // --- Lógica de Leche ---
     @Insert
     suspend fun insertarRegistroLeche(registro: RegistroLeche)
 

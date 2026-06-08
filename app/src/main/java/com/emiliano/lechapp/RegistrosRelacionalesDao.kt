@@ -22,7 +22,6 @@ data class BalanceDiario(
 @Dao
 interface RegistrosRelacionalesDao {
 
-    // --- Comprador ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertComprador(comprador: Comprador): Long
 
@@ -38,7 +37,6 @@ interface RegistrosRelacionalesDao {
     @Delete
     suspend fun borrarComprador(comprador: Comprador)
 
-    // --- AnimalLote ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnimalLote(animalLote: AnimalLote): Long
 
@@ -69,7 +67,6 @@ interface RegistrosRelacionalesDao {
     @Query("SELECT * FROM registros_leche WHERE animalId = :animalId AND fecha >= :fechaLimite ORDER BY fecha DESC")
     suspend fun obtenerRegistrosRecientesAnimal(animalId: Int, fechaLimite: Long): List<RegistroLeche>
 
-    // --- Gasto ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGasto(gasto: Gasto): Long
 
@@ -111,10 +108,6 @@ interface RegistrosRelacionalesDao {
         ORDER BY dia ASC
     """)
     fun obtenerGastosDiarios(inicioMs: Long): Flow<List<BalanceDiario>>
-
-    // ====================================================================
-    // --- Inteligencia Predictiva y Alertas (Fase 1) ---
-    // ====================================================================
 
     @Query("""
         SELECT COALESCE(SUM(litros), 0.0) as totalLitros 

@@ -27,10 +27,6 @@ object TextoUtils {
         return ssb
     }
 
-    /**
-     * Calcula la distancia de Levenshtein entre dos cadenas para medir su similitud.
-     * Retorna el número de ediciones (inserciones, borrados, sustituciones) necesarias.
-     */
     fun calcularDistanciaLevenshtein(s1: String, s2: String): Int {
         val dp = Array(s1.length + 1) { IntArray(s2.length + 1) }
         for (i in 0..s1.length) dp[i][0] = i
@@ -45,9 +41,6 @@ object TextoUtils {
         return dp[s1.length][s2.length]
     }
 
-    /**
-     * Busca el nombre más similar en una lista usando un umbral de tolerancia.
-     */
     fun encontrarMasCercano(nombre: String, existentes: List<String>, umbral: Int = 2): String {
         if (existentes.isEmpty()) return nombre
         var mejorMatch = nombre

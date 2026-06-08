@@ -88,7 +88,7 @@ class GestionAnimalesFragment : Fragment() {
     }
 
     private fun observarDatos() {
-        // 1. Lista de Animales y Selección
+        // Lista de Animales y Selección
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.relacionalesDao.obtenerAnimalesConProduccionTotal().collectLatest { animales ->
@@ -101,7 +101,7 @@ class GestionAnimalesFragment : Fragment() {
             }
         }
 
-        // 2. Historial Individual (Gráfica)
+        // Historial Individual (Gráfica)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.historialAnimalSeleccionado.collectLatest { historial ->
@@ -110,7 +110,7 @@ class GestionAnimalesFragment : Fragment() {
             }
         }
         
-        // 3. Predicciones (Basadas en el estado del ViewModel y Premium)
+        // Predicciones (Basadas en el estado del ViewModel y Premium)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.relacionalesDao.obtenerAnimalesConProduccionTotal().collectLatest { animales ->
@@ -119,7 +119,7 @@ class GestionAnimalesFragment : Fragment() {
             }
         }
 
-        // 4. Estado Premium
+        // Estado Premium
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.esUsuarioPremium.collectLatest { isPremium ->
